@@ -1,0 +1,100 @@
+classdef visualStim < handle
+    properties
+        T=[];                   %time vector
+        startTime=[];           %recording start time
+        nCh=[];                 %number of channels
+        nTrials=[];             %number of trials
+        nSamples=[];            %number of samples
+        channelNames=[];        %channel names
+        channelNumbersOld=[];   %old channel numbers - replica of channel number that allways keeps the previous value
+        hPlotAxis=[];           %handle for the axis for plotting
+        hControlPanel=[];       %handle for the panel on which controls will be created
+        hPlot=[];               %handle for the plot data
+        hPlotControls=[];       %handle for plot controls
+        hPlotBackground=[];     %handle for plot background (not deleted when plotting old background on new plot
+        plotParams=[];          %structure with plot specific parameters
+        currentPlotName=[];     %the name of the current from the plot list (gathered with method getPlotNames)
+        plotMethods=[];         %plot methods extracted from plot library
+        plotCreateMethods=[];   %plot create methods
+        plotNames=[];           %plot names extracted from plot library
+        currentPlotIdx=[];
+        refreshPlot=0;
+    end
+    properties (SetObservable)
+        M=[];                   %activity data [nChannels x nTrials x nSamples]
+        channelNumbers=[];      %channel numbers
+    end
+    methods
+        %class constractor
+        function obj=AVPlotData
+            addlistener(obj,'M','PostSet',@obj.changedActivityData); %add a listener to M, after its changed its size is updated in the changedDataEvent method
+            addlistener(obj,'channelNumbers','PostSet',@obj.changedChannelNumber); %add a listener to M, after its changed its size is updated in the changedDataEvent method
+            %get the plot names
+            allMethods=methods(class(obj));
+            obj.plotMethods=allMethods(strncmp('plot',allMethods,4));
+            obj.plotNames=cellfun(@(x) x(5:end),obj.plotMethods,'UniformOutput',0); %remove the "plot" from the string
+            obj.plotCreateMethods=cellfun(@(x) ['create' x(5:end)], obj.plotMethods,'UniformOutput',0);
+        end
+        %all class methods are written as separate functions
+        function [plotMethods,plotNames]=getPlotNames(obj)
+            plotMethods=obj.plotMethods;
+            plotNames=obj.plotNames;
+        end
+        function changedActivityData(obj,event,metaProp) %refresh properties every time new data are loaded
+            oldnTrials=obj.nTrials;
+            [obj.nCh obj.nTrials obj.nSamples]=size(obj.M);
+            if oldnTrials~=obj.nTrials %a change in the number of trials requires replotting (this does not hold for change in the time stamp value) 
+                obj.refreshPlot=1;
+            end
+        end
+        function changedChannelNumber(obj,event,metaProp) %define changes to plot every time the channel configuration is changed
+            if ~isequal(obj.channelNumbers,obj.channelNumbersOld)
+                obj.refreshPlot=1;
+            end
+            obj.channelNumbersOld=obj.channelNumbers;
+        end
+        
+        function deletePlotData(obj)
+            delete(obj.hPlot);
+            obj.hPlot=[];
+        end
+        function deletePlotControls(obj)
+            if isfield(obj.hPlotControls,'plotPropGrid')
+                delete(obj.hPlotControls.plotPropGrid);
+                obj.hPlotControls=[]; %notice that after deleting plotPropGrid all controls are also deleted (children)
+            end
+        end
+        function deletePlotBackground(obj)
+            if ~isempty(obj.hPlotBackground)
+                delete(cell2mat(struct2cell(obj.hPlotBackground)));
+                obj.hPlotBackground=[];
+            end
+        end
+        function generateFalsePlotData(obj)
+            obj.hPlot=plot(obj.hPlotAxis,1,1);
+        end
+        function initializePlot(obj,plotName,hPlotAxis,hControlPanel)
+            %set handles to main plot and plot controls
+            if nargin==2 %if evoked independent of activity viewer
+                fControlPanel = figure('Position',[100 100 400 600]);
+                hControlPanel = uiextras.Panel('Parent',fControlPanel, 'Title','Plot specific properties');
+                fPlotAxis = figure;
+                hPlotAxis = axes('Parent',fPlotAxis);
+            elseif nargin==3
+                fPlotAxis = figure;
+                hPlotAxis = axes('Parent',fPlotAxis);
+            end
+            
+            obj.plotParams=[];
+            obj.hPlotAxis=hPlotAxis;
+            set(obj.hPlotAxis,'XTickMode','auto','YTickMode','auto');
+            obj.hControlPanel=hControlPanel;
+            obj.currentPlotIdx=strcmp(obj.plotNames,plotName);
+            obj.(obj.plotCreateMethods{obj.currentPlotIdx});
+        end
+        function replot(obj)
+            obj.deletePlotData;
+            obj.(obj.plotMethods{obj.currentPlotIdx});
+        end
+    end
+end %EOF
