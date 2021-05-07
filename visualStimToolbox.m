@@ -1,7 +1,7 @@
 function []=visualStimToolbox(varargin)
 %% Default params
 simulationModel=false;
-initialVStim='VS_testStim';
+initialVStim='VS_fullFieldFlash';
 
 %% Output list of default variables
 %print out default arguments and values if no inputs are given
@@ -27,7 +27,7 @@ end
 
 %% %%%%%%%%%%%%%%%% Parameter definitions  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 VS.hand.hMainFigure=figure; %initialize GUI figure
-VS.par.NSKToolBoxMainDir=fileparts(which('identifierOfMainDir4NSKToolBox'));
+VS.par.NSKToolBoxMainDir='C:\Users\sther\Documents\GitHub';
 VS.par.dirSep=filesep; %choose file/dir separator according to platform
 
 %collect all visual stimulation patterns
@@ -51,6 +51,7 @@ end
 rng('shuffle');
 
 %initial configuration
+
 VS.par.currentVSO=find(strcmp(VS.par.VSMethods,initialVStim)); %the default visual stim (first on the list)
 VS.par.currentGUIScreen=1; %the default monitor to display GUI
 VS.par.currentPTBScreen=2; %the default monitor to display the visual stimulation
@@ -324,7 +325,7 @@ initializeVisualStim;
             VS.hand.visualStimMenu.([VS.par.VSMethods{i}])=uimenu(VS.hand.hVisualStimMenu,...
                 'Label', VS.par.VSObjNames{i}, 'Checked','off', 'Callback', {@CallbackChangeVisualStim,i});
         end
-        set(VS.hand.visualStimMenu.([VS.par.VSMethods{VS.par.currentVSO}]),'Checked','on'); %select one of the stims
+          set(VS.hand.visualStimMenu.([VS.par.VSMethods{VS.par.currentVSO}]),'Checked','on'); %select one of the stims
         
         if VS.par.useNewUIX %use uix for GUI layouts
 

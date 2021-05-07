@@ -160,7 +160,7 @@ classdef VS_oddBall < VStim
             
             
             %main loop - start the session
-            obj.sendTTL(1,true); %session start trigger (also triggers the recording start)
+%            obj.sendTTL(1,true); %session start trigger (also triggers the recording start)
             WaitSecs(obj.preSessionDelay); %pre session wait time
             
             
@@ -169,19 +169,19 @@ classdef VS_oddBall < VStim
                 Screen('DrawTexture',obj.PTB_win,imgTex(obj.stimSequence(1,i),lumIndices(i)),[],obj.visualFieldRect,obj.rotation);
                 
                 for j=1:size(obj.stimSequence,1)-1
-                    obj.sendTTL(2,true);
+                %    obj.sendTTL(2,true);
                     obj.applyBackgound;
                     [obj.on_Flip(j,i),obj.on_Stim(j,i),obj.on_FlipEnd(j,i),obj.on_Miss(j,i)]=Screen('Flip',obj.PTB_win);
-                    obj.sendTTL(3,true);
+                 %   obj.sendTTL(3,true);
                     Screen('FillOval',obj.PTB_win,obj.visualFieldBackgroundLuminance);
                     obj.applyBackgound;
                     [obj.off_Flip(j,i),obj.off_Stim(j,i),obj.off_FlipEnd(j,i),obj.off_Miss(j,i)]=Screen('Flip',obj.PTB_win,obj.on_Flip(j,i)+obj.actualStimDuration-0.5*obj.ifi);
-                    obj.sendTTL(3,false);
+               %     obj.sendTTL(3,false);
                     % Update image buffer for the first time
                     Screen('DrawTexture',obj.PTB_win,imgTex(obj.stimSequence(j+1,i),lumIndices(i)),[],obj.visualFieldRect,obj.rotation);
                     WaitSecs(obj.interStimulusDelay-(GetSecs-obj.off_Flip(j,i)));
                 end
-                obj.sendTTL(2,false);
+              %  obj.sendTTL(2,false);
                 
                 
                 %check if stimulation session was stopped by the user
@@ -196,7 +196,7 @@ classdef VS_oddBall < VStim
            obj.stimSequence(end,:)=[]; %remove the last stim which is not shown
             
             WaitSecs(obj.postSessionDelay);
-            obj.sendTTL(1,false); %session end trigger
+        %    obj.sendTTL(1,false); %session end trigger
             disp('Session ended');
             Screen('Close',imgTex);
         end

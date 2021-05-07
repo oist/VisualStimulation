@@ -69,27 +69,31 @@ classdef VS_fullFieldFlash < VStim
 
             % Update image buffer for the first time
             obj.syncMarkerOn = false; %reset sync marker
-            Screen('FillOval',obj.PTB_win,obj.luminosities(1),obj.visualFieldRect);
+            
+
+             Screen('FillRect',obj.PTB_win,obj.luminosities(1));
             obj.applyBackgound;  %set background mask and finalize drawing (drawing finished)
                         
             %main loop - start the session
-            obj.sendTTL(1,true); %session start trigger (also triggers the recording start)
+           % obj.sendTTL(1,true); %session start trigger (also triggers the recording start)
             WaitSecs(obj.preSessionDelay); %pre session wait time
             
             for i=1:obj.nTotTrials
                 
                 [obj.on_Flip(i),obj.on_Stim(i),obj.on_FlipEnd(i),obj.on_Miss(i)]=Screen('Flip',obj.PTB_win);
-                obj.sendTTL(2,true); %session start trigger (also triggers the recording start)
+               % obj.sendTTL(2,true); %session start trigger (also triggers the recording start)
                                
                 % Update display
-                 Screen('FillOval',obj.PTB_win,obj.visualFieldBackgroundLuminance,obj.visualFieldRect); 
+              
+                   Screen('FillRect',obj.PTB_win,obj.visualFieldBackgroundLuminance);
                 obj.applyBackgound; %set background mask and finalize drawing (drawing finished)
              
                 [obj.off_Flip(i),obj.off_Stim(i),obj.off_FlipEnd(i),obj.off_Miss(i)]=Screen('Flip',obj.PTB_win,obj.on_Flip(i)+obj.actualStimDuration-0.5*obj.ifi);
-                obj.sendTTL(2,false); %session start trigger (also triggers the recording start)
+              %  obj.sendTTL(2,false); %session start trigger (also triggers the recording start)
                 
                 % Update image buffer
-                Screen('FillOval',obj.PTB_win,obj.luminosities(i+1),obj.visualFieldRect);
+           
+                Screen('FillRect',obj.PTB_win,obj.luminosities(i+1));
                 obj.applyBackgound; %set background mask and finalize drawing (drawing finished)
                 
                 disp(['Trial ' num2str(i) '/' num2str(obj.nTotTrials)]);
@@ -104,7 +108,7 @@ classdef VS_fullFieldFlash < VStim
                 WaitSecs(obj.delays(i)-(GetSecs-obj.off_Flip(i)));
             end
             WaitSecs(obj.postSessionDelay);
-            obj.sendTTL(1,false); %session start trigger (also triggers the recording start)
+        %    obj.sendTTL(1,false); %session start trigger (also triggers the recording start)
             
             obj.luminosities=obj.luminosities(1:end-1); %removing last dummy luminocity value from array
             disp('Session ended');

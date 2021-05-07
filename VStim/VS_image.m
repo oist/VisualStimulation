@@ -85,44 +85,46 @@ classdef VS_image < VStim
             
             % Update image buffer for the first time
             for j=1:nScreens
-                Screen('DrawTexture',obj.PTB_win(obj.selectedScreen(j)),obj.imgTex(obj.imgSequence(obj.order(1)),j),[],obj.visualFieldRect,obj.rotation);
+                Screen('DrawTexture',obj.PTB_win(obj.selectedScreen(j)),obj.imgTex(obj.imgSequence(obj.order(1)),j),[],[],obj.rotation);
             end
             obj.applyBackgound;  %set background mask and finalize drawing (drawing finished)
             
             %main loop - start the session
-            obj.sendTTL(1,true); %session start trigger (also triggers the recording start)
+          %  obj.sendTTL(1,true); %session start trigger (also triggers the recording start)
             WaitSecs(obj.preSessionDelay); %pre session wait time
             
             for i=1:obj.nTotTrials
                 for j=1:nScreens
                     [obj.on_Flip(i),obj.on_Stim(i),obj.on_FlipEnd(i),obj.on_Miss(i)]=Screen('Flip',obj.PTB_win(obj.selectedScreen(j)));
                 end
-                obj.sendTTL(2,true); %session start trigger (also triggers the recording start)
+              %  obj.sendTTL(2,true); %session start trigger (also triggers the recording start)
                                
                 if ~noTimeGapBetweenImages %if there is a black screen between consecutive images
                     % Update display
                     for j=1:nScreens
-                        Screen('FillOval',obj.PTB_win(obj.selectedScreen(j)),obj.visualFieldBackgroundLuminance,obj.visualFieldRect);
+                     %   Screen('FillOval',obj.PTB_win(obj.selectedScreen(j)),obj.visualFieldBackgroundLuminance,obj.visualFieldRect);
+                           Screen('FillRect',obj.PTB_win(obj.selectedScreen(j)),obj.visualFieldBackgroundLuminance);
                     end
                     obj.applyBackgound;  %set background mask and finalize drawing (drawing finished)
                     for j=1:nScreens
                         [obj.off_Flip(i),obj.off_Stim(i),obj.off_FlipEnd(i),obj.off_Miss(i)]=Screen('Flip',obj.PTB_win(obj.selectedScreen(j)),obj.on_Flip(i)+obj.actualStimDuration(obj.selectedScreen(j))-0.5*obj.ifi(obj.selectedScreen(j)));
                     end
                     WaitSecs(0.1);
-                    obj.sendTTL(2,false); %session start trigger (also triggers the recording start)
+                   % obj.sendTTL(2,false); %session start trigger (also triggers the recording start)
                 elseif i<obj.nTotTrials
                     obj.off_Flip(i)=obj.on_Flip(i);
-                    obj.sendTTL(2,false); %session start trigger (also triggers the recording start)
+                 %   obj.sendTTL(2,false); %session start trigger (also triggers the recording start)
                 else
                     for j=1:nScreens
-                        Screen('FillOval',obj.PTB_win(obj.selectedScreen(j)),obj.visualFieldBackgroundLuminance,obj.visualFieldRect);
+                      %  Screen('FillOval',obj.PTB_win(obj.selectedScreen(j)),obj.visualFieldBackgroundLuminance,obj.visualFieldRect);
+                          Screen('FillRect',obj.PTB_win(obj.selectedScreen(j)),obj.visualFieldBackgroundLuminance);
                     end
                     obj.applyBackgound;  %set background mask and finalize drawing (drawing finished)
                     
                     for j=1:nScreens
                         [obj.on_Flip(i+1),obj.on_Stim(i+1),obj.on_FlipEnd(i+1),obj.on_Miss(i+1)]=Screen('Flip',obj.PTB_win(obj.selectedScreen(j)),obj.on_Flip(i)+obj.actualStimDuration(obj.selectedScreen(j))-0.5*obj.ifi(obj.selectedScreen(j)));
                     end
-                    obj.sendTTL(2,false); %session start trigger (also triggers the recording start)
+                %    obj.sendTTL(2,false); %session start trigger (also triggers the recording start)
                     obj.off_Flip(i+1)=obj.on_Flip(i+1);
                 end
                 % Update image buffer for the next trial
@@ -143,7 +145,7 @@ classdef VS_image < VStim
                 WaitSecs(wait2NextFrame-(GetSecs-obj.off_Flip(i)));
             end
             WaitSecs(obj.postSessionDelay);
-            obj.sendTTL(1,false); %session end trigger 
+           % obj.sendTTL(1,false); %session end trigger 
             disp('Session Ended');
             
             obj.order=obj.order(1:end-1); %remove the last (never shown stimulus from the list)
@@ -255,14 +257,14 @@ classdef VS_image < VStim
                 I=imread([obj.imagesDir obj.fSep obj.imgNames{i}]);
                 [M,N,l]=size(I);
                 if N>=M
-                    cutPixels=round((N-M)/2);
+                  %  cutPixels=round((N-M)/2);
                     for j=1:nScreens
-                        obj.imgTex(i,j)=Screen('MakeTexture', obj.PTB_win(obj.selectedScreen(j)),I(:,(cutPixels+1):(end-cutPixels),:),obj.rotation);
+                        obj.imgTex(i,j)=Screen('MakeTexture', obj.PTB_win(obj.selectedScreen(j)),I,obj.rotation);
                     end
                 else
-                    cutPixels=round((M-N)/2);
+                 %   cutPixels=round((M-N)/2);
                     for j=1:nScreens
-                        obj.imgTex(i,j)=Screen('MakeTexture', obj.PTB_win(obj.selectedScreen(j)),I((cutPixels+1):(end-cutPixels),:,:),obj.rotation);
+                        obj.imgTex(i,j)=Screen('MakeTexture', obj.PTB_win(obj.selectedScreen(j)),I,obj.rotation);
                     end
                 end
             end
