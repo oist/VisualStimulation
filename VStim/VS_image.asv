@@ -52,6 +52,7 @@ classdef VS_image < VStim
             else
                 obj.order=1:obj.nImages;
             end
+            obj.order=[obj.order obj.order(1)]; %always add another stimulation which will never be shown
             obj.imgSequence=repmat(obj.order,1,obj.trialsPerCategory);
             
            
@@ -109,10 +110,10 @@ classdef VS_image < VStim
                 end
                 obj.applyBackgound;  %set background mask and finalize drawing (drawing finished)
                 for j=1:obj.nPTBScreens
-                    [obj.on_Flip(i),obj.on_Stim(i),obj.on_FlipEnd(i),obj.on_Miss(i)]=Screen('Flip',obj.PTB_win(selectedScreen(j)));
+                    [obj.on_Flip(i),obj.on_Stim(i),obj.on_FlipEnd(i),obj.on_Miss(i)]=Screen('Flip',obj.PTB_win(selectedScreen(j)),obj.actualStimDuration(selectedScreen(j))-0.5*obj.ifi(selectedScreen(j)));
                 end
                 
-                WaitSecs(obj.stimDuration-(GetSecs-obj.on_Flip(i))); %display the stim
+                WaitSecs(obj.stimDuration-(GetSecs-obj.off_Flip(i))); %display the stim
                 
                 if ~noTimeGapBetweenImages %if blank between images 
                     for j=1:obj.nPTBScreens

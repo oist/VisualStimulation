@@ -1,7 +1,7 @@
 function []=visualStimToolbox(varargin)
 %% Default params
 simulationModel=false;
-initialVStim='VS_fullFieldFlash';
+initialVStim='VS_image';
 
 %% Output list of default variables
 %print out default arguments and values if no inputs are given
@@ -93,6 +93,7 @@ initializeVisualStim;
             end
         end
         VS.par.nScreens=numel(VS.par.screens);
+        VS.par.currentPTBScreen=2:VS.par.nScreens;
         
         if VS.par.nScreens==1
             VS.par.currentPTBScreen=1;
@@ -110,28 +111,31 @@ initializeVisualStim;
         VS.par.GUIPosition=[scrnPos(1)+(scrnPos(3)-scrnPos(1))*0.01 scrnPos(2)+(scrnPos(4)-scrnPos(2))*0.07 (scrnPos(3)-scrnPos(1))*0.4 (scrnPos(4)-scrnPos(2))*0.8];
         set(VS.hand.hMainFigure,'position',VS.par.GUIPosition);
         
-        if ~simulationModel
-            try
-                if VS.par.nScreens>1
-                    [VS.par.PTB_win] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen));
-                else
-                    PTBScreenPosition=round([VS.par.GUIPosition(1)+VS.par.GUIPosition(3)+30 scrnPos(4)-sum(VS.par.GUIPosition([2 4]))-30 scrnPos(3)-30 scrnPos(4)-VS.par.GUIPosition(2)]);
-                    [VS.par.PTB_win] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen),[],PTBScreenPosition);
+        for i=1:(VS.par.nScreens-1)
+            if ~simulationModel
+                
+                try
+                    if VS.par.nScreens>1
+                        [VS.par.PTB_win(i)] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen(i)));
+                    else
+                        PTBScreenPosition=round([VS.par.GUIPosition(1)+VS.par.GUIPosition(3)+30 scrnPos(4)-sum(VS.par.GUIPosition([2 4]))-30 scrnPos(3)-30 scrnPos(4)-VS.par.GUIPosition(2)]);
+                        [VS.par.PTB_win] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen),[],PTBScreenPosition);
+                    end
+                catch
+                    disp('Please notice: Monitor test in PTB failed, use only for simulation mode!!!!');
+                    Screen('Preference','SkipSyncTests', 1);
+                    if VS.par.nScreens>1
+                        [VS.par.PTB_win] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen(i)));
+                    else
+                        PTBScreenPosition=round([VS.par.GUIPosition(1)+VS.par.GUIPosition(3)+30 scrnPos(4)-sum(VS.par.GUIPosition([2 4]))-30 scrnPos(3)-30 scrnPos(4)-VS.par.GUIPosition(2)]);
+                        [VS.par.PTB_win] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen),[],PTBScreenPosition);
+                    end
                 end
-            catch
-                disp('Please notice: Monitor test in PTB failed, use only for simulation mode!!!!');
+            else
                 Screen('Preference','SkipSyncTests', 1);
-                if VS.par.nScreens>1
-                    [VS.par.PTB_win] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen));
-                else
-                    PTBScreenPosition=round([VS.par.GUIPosition(1)+VS.par.GUIPosition(3)+30 scrnPos(4)-sum(VS.par.GUIPosition([2 4]))-30 scrnPos(3)-30 scrnPos(4)-VS.par.GUIPosition(2)]);
-                    [VS.par.PTB_win] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen),[],PTBScreenPosition);
-                end
+                PTBScreenPosition=round([scrnPos(3)-150 scrnPos(4)-410 scrnPos(3)-50 scrnPos(4)-310]);
+                [VS.par.PTB_win] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen(i)),[],PTBScreenPosition);
             end
-        else
-            Screen('Preference','SkipSyncTests', 1);
-            PTBScreenPosition=round([scrnPos(3)-150 scrnPos(4)-410 scrnPos(3)-50 scrnPos(4)-310]);
-            [VS.par.PTB_win] = Screen('OpenWindow',VS.par.screens(VS.par.currentPTBScreen),[],PTBScreenPosition);
         end
     end
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% Initialize VS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -159,7 +163,7 @@ initializeVisualStim;
         VS.par.nProps=numel(VS.par.VSOProp);
         
         updateVisualStimBoxGUI;
-
+        
     end
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% Callbacks %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -183,9 +187,9 @@ initializeVisualStim;
             saveFile=[VS.par.VSDirectory '\stats\' VS.par.VSObjNames{VS.par.currentVSO} '_' timeString];
         end
         
-        %run visual stimulation        
+        %run visual stimulation
         VS.par.VSO=VS.par.VSO.run;
-
+        
         VSMetaData=VS.par.VSO.getProperties; %get properties
         
         if get(VS.hand.GenealBox.hSaveStats,'value')
@@ -325,10 +329,10 @@ initializeVisualStim;
             VS.hand.visualStimMenu.([VS.par.VSMethods{i}])=uimenu(VS.hand.hVisualStimMenu,...
                 'Label', VS.par.VSObjNames{i}, 'Checked','off', 'Callback', {@CallbackChangeVisualStim,i});
         end
-          set(VS.hand.visualStimMenu.([VS.par.VSMethods{VS.par.currentVSO}]),'Checked','on'); %select one of the stims
+        set(VS.hand.visualStimMenu.([VS.par.VSMethods{VS.par.currentVSO}]),'Checked','on'); %select one of the stims
         
         if VS.par.useNewUIX %use uix for GUI layouts
-
+            
             % Arrange the main interface windows
             VS.hand.hMainWindow = uix.HBoxFlex('Parent',VS.hand.hMainFigure, 'Spacing',8);
             VS.hand.hGenealBox = uix.VBox('Parent',VS.hand.hMainWindow, 'Spacing',4, 'Padding',4);

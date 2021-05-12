@@ -1,24 +1,18 @@
 classdef (Abstract) VStim < handle
-    properties (SetAccess=public)
-        %all these properties are modifiable by user and will appear in visual stim GUI
-        %Place all other variables in hidden properties
-        interTrialDelay = 0.5; %sec
-        trialsPerCategory = 2;
-        preSessionDelay = 1;
-        postSessionDelay = 0;
-        trialStartTrig = 'MC=2,Intan=6';
-    end
+
     properties (SetObservable, AbortSet = true, SetAccess=public)
         visualFieldBackgroundLuminance = 64;
-       % visualFieldDiameter = 0; %pixels
-        inVivoSettings = false;
-        DMDcorrectionIntensity = 0;
+        trialsPerCategory = 2;
+        preSessionDelay = 1;
+        postSessionDelay = 0;   
         stimDuration = 2;
-        backgroundMaskSteepness = 0.2;
+        interTrialDelay = [0.3 1.1]; %sec
+        trialStartTrig = 'MC=2,Intan=6';
+        screenLayout=[3,1,2]
     end
     properties (Constant)
-        backgroudLuminance = 0;
-        maxTriggers=4;
+       % backgroudLuminance = 0;
+      %  maxTriggers=4;
         
         visualFieldBackgroundLuminanceTxt = 'The luminance of the circular visual field that is projected to the retina';
       %  visualFieldDiameterTxt = 'The diameter of the circular visual field that is projected to the retina [pixels], 0 takes maximal value';
@@ -28,6 +22,8 @@ classdef (Abstract) VStim < handle
         preSessionDelayTxt='The delay before the begining of a recording session [s]';
         postSessionDelayTxt='The delay after the ending of a recording session [s]';
         backgroundMaskSteepnessTxt='The steepness of the border on the visual field main mask [0 1]';
+        screenLayoutTxt='order of the screens around the chamber'
+        
     end
     properties (SetAccess=protected)
         mainDir %main directory of visual stimulation toolbox
@@ -165,6 +161,20 @@ classdef (Abstract) VStim < handle
             for i=1:obj.nPTBScreens
                 Screen('DrawingFinished', obj.PTB_win(i)); % Tell PTB that no further drawing commands will follow before Screen('Flip')
             end
+        end
+        
+        function distributeToScreens(obj,img,idx) %apply background and change the synchrony marker state (on/off)
+            
+            imgRect=[obj.rect(1,3) sum(obj.rect(:,4))];
+            resizedImg=imresize(img,[imgRect(1) imgRect(2)]);
+            imgColumns=[1; cumsum(obj.rect(:,4))];
+            
+            for j=1:obj.nPTBScreens
+                currImg=resizedImg(:,imgColumns(j):imgColumns(j+1),:);
+                currImg=imrotate(currImg,90);
+                obj.imgTex(idx,j)=Screen('MakeTexture', obj.PTB_win(obj.screenLayout(j)),currImg);
+            end
+            
         end
         
         function initializeBackground(obj,event,metaProp)
