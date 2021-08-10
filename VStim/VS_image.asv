@@ -46,27 +46,7 @@ classdef VS_image < VStim
             
             
          
-            
-            if obj.randomizeOrder
-                obj.order=randperm(obj.nImages); 
-            else
-                obj.order=1:obj.nImages;
-            end
-            obj.imgSequence=repmat(obj.order,1,obj.trialsPerCategory);
-            
-           
-            
-            %check if to you a mode in which images switch without a blank screen in between
-            if obj.interTrialDelay(1)==0
-                noTimeGapBetweenImages=true;
-                wait2NextFrame=repmat(obj.actualStimDuration(1),[1,obj.nTotTrials]);
-            else
-                noTimeGapBetweenImages=false;   %do delays between stim, possibly random durations
-                possibleDelays=obj.interTrialDelay(1):obj.interTrialDelay(2):obj.interTrialDelay(3)
-                wait2NextFrame=possibleDelays(Randi(numel(possibleDelays),[obj.nTotTrials,1]));
-            end
-            
-            %run test Flip (usually this first flip is slow and so it is not included in the anlysis
+               %run test Flip (usually this first flip is slow and so it is not included in the anlysis
             obj.syncMarkerOn = false; %initialize sync signal
             for i=1:obj.nPTBScreens
                 Screen('FillRect',obj.PTB_win(selectedScreen(i)),obj.visualFieldBackgroundLuminance);
@@ -101,9 +81,9 @@ classdef VS_image < VStim
             
             obj.sendTTL(1,true); %session start trigger (also triggers the recording start)
             WaitSecs(obj.preSessionDelay); %pre session wait time
-             tic
+            
             for i=1:obj.nTotTrials
-               
+                
                 % Update image buffer for the next trial
                 for j=1:obj.nPTBScreens
                     Screen('DrawTexture',obj.PTB_win(selectedScreen(j)),obj.imgTex(obj.imgSequence(i),j),[],[],obj.rotation);
@@ -129,12 +109,10 @@ classdef VS_image < VStim
                     
                 end
                 
-              %  WaitSecs(wait2NextFrame(i)); %wait according to the inter-trial delay
+                WaitSecs(wait2NextFrame(i)); %wait according to the inter-trial delay
                 obj.sendTTL(2,false);
-              
-                disp(i)
             end
-              toc
+            
             
             for j=1:obj.nPTBScreens
                 Screen('FillRect',obj.PTB_win(selectedScreen(j)),obj.visualFieldBackgroundLuminance);

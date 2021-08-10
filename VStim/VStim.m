@@ -2,13 +2,13 @@ classdef (Abstract) VStim < handle
 
     properties (SetObservable, AbortSet = true, SetAccess=public)
         visualFieldBackgroundLuminance = 64;
-        trialsPerCategory = 2;
+        trialsPerCategory = 20;
         preSessionDelay = 1;
         postSessionDelay = 0;   
-        stimDuration = 2;
-        interTrialDelay = [0.3 1.1]; %sec
+        stimDuration = 1;
+        interTrialDelay = [0]; %sec
         trialStartTrig = 'MC=2,Intan=6';
-        screenLayout=[3,1,2]
+        screenLayout=[1,2,3]
     end
     properties (Constant)
        % backgroudLuminance = 0;
@@ -37,19 +37,15 @@ classdef (Abstract) VStim < handle
         nTotTrials = []; %the total number of trials in a stimulatin session
         nPTBScreens=[];
         hInteractiveGUI %in case GUI is needed to interact with visual stimulation
+        dioSession
     end
     
     properties (Hidden, SetAccess=protected)
         fSep = '\';
         escapeKeyCode = []; %the key code for ESCAPE
         dirSep=filesep; %choose file/dir separator according to platform
-        OSPlatform = 1 %checks what is the OS for sending TTLs: Window (1) or Linux (2) or simulation mode (3)
-        binaryMultiplicator = [1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768]; %512 1024 2048 4096 8192 16384 32768
-        currentBinState = [false false false false false false false false false false false false false false false false]; %false false false false false false false
-        io %parallel port communication object for PC
         
-        parallelPortNum = 956; %Parallel port default number
-        
+        currentBinState = [false, false]; 
         PTB_win %Pointer to PTB window
         whiteIdx %black index for screen
         blackIdx %black index for screen
@@ -73,12 +69,7 @@ classdef (Abstract) VStim < handle
         %class constractor
         function obj=VStim(PTB_WindowPointer,interactiveGUIhandle)
             addlistener(obj,'visualFieldBackgroundLuminance','PostSet',@obj.initializeBackground); %add a listener to visualFieldBackgroundLuminance, after its changed its size is updated in the changedDataEvent method
-          %  addlistener(obj,'visualFieldDiameter','PostSet',@obj.initializeBackground); %add a listener to visualFieldDiameter, after its changed its size is updated in the changedDataEvent method
-       %     addlistener(obj,'DMDcorrectionIntensity','PostSet',@obj.initializeBackground); %add a listener to visualFieldDiameter, after its changed its size is updated in the changedDataEvent method
-        %    addlistener(obj,'inVivoSettings','PostSet',@obj.initializeBackground); %add a listener to visualFieldDiameter, after its changed its size is updated in the changedDataEvent method
-         %   addlistener(obj,'backgroundMaskSteepness','PostSet',@obj.initializeBackground); %add a listener to backgroundMaskSteepness, after its changed its size is updated in the changedDataEvent method
             addlistener(obj,'stimDuration','PostSet',@obj.updateActualStimDuration); %add a listener to stimDuration, after its changed its size is updated in the changedDataEvent method
-
             obj.nPTBScreens=numel(PTB_WindowPointer);
             
             if nargin==2
@@ -115,7 +106,8 @@ classdef (Abstract) VStim < handle
                     obj.(configData{1}{i})=str2num(configData{2}{i});
                 end
             end
-%            obj.initializeTTL;
+            
+            obj.initializeTTL;
 
             obj.whiteIdx=WhiteIndex(obj.PTB_win(1));
             obj.blackIdx=BlackIndex(obj.PTB_win(1));
@@ -135,8 +127,7 @@ classdef (Abstract) VStim < handle
             
             %set background luminance
             obj.initializeBackground;
-            
-%            obj.sendTTL(1:4,[false false false false])
+
         end
         
         function estimatedTime=estimateProtocolDuration(obj)
@@ -187,8 +178,8 @@ classdef (Abstract) VStim < handle
 
             
             maskblobOn=maskblobOff; %make on mask addition
-            maskblobOn((obj.rect(1,4)-obj.syncSquareSizePix):end,1:obj.syncSquareSizePix,:)=obj.syncSquareLuminosity;
-            maskblobOff((obj.rect(1,4)-obj.syncSquareSizePix):end,1:obj.syncSquareSizePix,2)=obj.syncSquareLuminosity;
+            maskblobOn(1:obj.syncSquareSizePix,(obj.rect(1,3)-obj.syncSquareSizePix):end,:)=obj.syncSquareLuminosity;
+            maskblobOff(1:obj.syncSquareSizePix,(obj.rect(1,3)-obj.syncSquareSizePix):end,2)=obj.syncSquareLuminosity;
             
             % Build a single transparency mask texture:
             for i=1:obj.nPTBScreens
@@ -240,58 +231,22 @@ classdef (Abstract) VStim < handle
             end
         end
         
-%       %  function initializeTTL(obj)
-%             if ispc
-%                 if strcmp(getenv('COMPUTERNAME'),'M-01081') || strcmp(getenv('COMPUTERNAME'),'M-01124') % for the case where there is no parallel port
-%                     obj.OSPlatform=3;
-%                 else
-%                     obj.OSPlatform=1;
-%                 end
-%             else
-%                 obj.OSPlatform=2;
-%             end
-%             
-%             if obj.OSPlatform==1 %window
-%                 if isempty(obj.io)
-%                     %create IO64 interface object
-%                     obj.io.ioObj = io64();
-%                     
-%                     %install the inpoutx64.dll driver, status = 0 if installation successful
-%                     obj.io.status = io64(obj.io.ioObj);
-%                     
-%                     if (obj.io.status ~= 0)
-%                         error('inp/outp installation failed!!!!')
-%                     end
-%                 else
-%                     disp('Parallel port object already exists');
-%                 end
-%                 
-%             elseif obj.OSPlatform==2 % linux
-%                 
-%             end
-%             
-%             sig=false(1,size(obj.trigChNames,1)); %sig=false(1,4);
-%             for i=1:size(obj.trigChNames,1) %i=1:4
-%                 sig(i)=true;
-%             %    sendTTL(obj,1:size(obj.trigChNames,1),sig); % sendTTL(obj,1:4,sig);
-%                 WaitSecs(0.2);
-%                 sig(i)=false;
-%             end
-%           %  sendTTL(obj,1:size(obj.trigChNames,1),sig);
-%             
-%         end %function initializeTTL
-%         
-%         function sendTTL(obj,TTLNum,TTLValue)
-%             if obj.OSPlatform==1
-%                 obj.currentBinState(obj.trigChNames(TTLNum,:)-1)=[TTLValue;TTLValue]';
-%                 io64(obj.io.ioObj,obj.parallelPortNum,sum(obj.binaryMultiplicator.*obj.currentBinState));
-%                 %io64(obj.io.ioObj,obj.parallelPortNum,sum(obj.binaryMultiplicator.*obj.currentBinState));
-%             elseif obj.OSPlatform==2
-%                 pp(uint8(obj.trigChNames(TTLNum,:)),[TTLValue TTLValue],false,uint8(0),uint64(obj.parallelPortNum)); %session start trigger (also triggers the recording start)
-%             else
-%                 disp(['Simulation mode trigger/value - ' num2str([TTLNum TTLValue])]);
-%             end
-%         end
+        function initializeTTL(obj)
+            if ~isempty(obj.dioSession)
+            release(obj.dioSession);
+            end
+            obj.dioSession=daq.createSession('ni');
+            addDigitalChannel(obj.dioSession,'dev1','port1/line0','OutputOnly');
+            addDigitalChannel(obj.dioSession,'dev1','port1/line1','OutputOnly');
+            outputSingleScan(obj.dioSession,obj.currentBinState);
+        end
+        
+        function sendTTL(obj,chan,val)
+            obj.currentBinState(chan)=val;
+            outputSingleScan(obj.dioSession,obj.currentBinState);
+        end
+        
+        
         
         function obj=updateActualStimDuration(obj,event,metaProp)
             %calculate optimal stim duration (as an integer number of frames)
@@ -307,6 +262,7 @@ classdef (Abstract) VStim < handle
         end
         
         function cleanUp(obj)
+            release(obj.dioSession);
         end
         
     end
