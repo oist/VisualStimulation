@@ -151,7 +151,7 @@ classdef VS_image < VStim
             WaitSecs(obj.postSessionDelay);
             obj.sendTTL(1,false); %session end trigger
             disp('Session Ended');
-            
+            release(obj.dioSession);
             obj.order=obj.order(1:end-1); %remove the last (never shown stimulus from the list)
         end
         

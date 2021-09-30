@@ -1,7 +1,7 @@
 function []=visualStimToolbox(varargin)
 %% Default params
 simulationModel=false;
-initialVStim='VS_image';
+initialVStim='VS_driftingGrating';
 
 %% Output list of default variables
 %print out default arguments and values if no inputs are given

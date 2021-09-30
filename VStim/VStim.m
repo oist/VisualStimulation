@@ -8,7 +8,7 @@ classdef (Abstract) VStim < handle
         stimDuration = 1;
         interTrialDelay = [0]; %sec
         trialStartTrig = 'MC=2,Intan=6';
-        screenLayout=[1,2,3]
+        screenLayout=[2,3,1]
     end
     properties (Constant)
        % backgroudLuminance = 0;
@@ -56,7 +56,7 @@ classdef (Abstract) VStim < handle
         errorMsg=[]; %The message the object returns in case of an error
         simulationMode = false; %a switch that is used to prepare visual stimulation without applying the stimulation itself
         lastExcecutedTrial = 0; %parameter that keeps the number of the last excecuted trial
-        syncSquareSizePix = 60; % the size of the the corder square for syncing stims
+        syncSquareSizePix = 700; % the size of the the corder square for syncing stims
         syncSquareLuminosity=255; % The luminocity of the square used for syncing 
             syncMarkerOn = false;   
      end
@@ -157,6 +157,7 @@ classdef (Abstract) VStim < handle
         function distributeToScreens(obj,img,idx) %apply background and change the synchrony marker state (on/off)
             
             imgRect=[obj.rect(1,3) sum(obj.rect(:,4))];
+            img=flipud(img);
             resizedImg=imresize(img,[imgRect(1) imgRect(2)]);
             imgColumns=[1; cumsum(obj.rect(:,4))];
             
