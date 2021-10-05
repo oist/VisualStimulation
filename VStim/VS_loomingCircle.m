@@ -1,12 +1,12 @@
 classdef VS_loomingCircle < VStim
     properties (SetAccess=public)
-        circleColor = [0 0 0];
+        circleColor = [0    0  110; 0 0 100; 0 0 90];
         randomizeCircleColor = true;
         
         initialXYPosition = [-0.25 0];
         randomizeInitialPositions = true;
         
-        circleVelocity = 100;
+        circleVelocity = 5:10:35;
         randomizeVelocity = true;
         
         circleTrueSize = 30;
@@ -21,7 +21,7 @@ classdef VS_loomingCircle < VStim
         
         displayWidthHeight = [1 1]; %the width and height of the screen in cm [width height]
         
-        selectedScreen = 1;
+        selectedScreen = 3;
     end
     
     properties (Constant)
@@ -126,17 +126,18 @@ classdef VS_loomingCircle < VStim
             disp('Session starting');
 
             %main loop - start the session
-             obj.sendTTL(1,true); %session start trigger (also triggers the recording start)
+  
             
             WaitSecs(obj.preSessionDelay); %pre session wait time
             for i=1:obj.nTotTrials
-                
+               obj.sendTTL(1,true);
                 tmpCircleColor=obj.circleColorSequence(:,i);
                 tmpVelocity=obj.velocitySequence(i);
                 
                 r=obj.eye2ScreenDistance*obj.circleTrueSize/tmpVelocity./t(end:-1:1);
                 
-                ovalCoordinates=round([max(obj.rect(obj.selectedScreen,1),x0(i)-r);max(obj.rect(obj.selectedScreen,2),y0(i)-r);min(x0(i)+r,obj.rect(obj.selectedScreen,3));min(obj.rect(obj.selectedScreen,4),y0(i)+r)]);
+               % ovalCoordinates=round([max(obj.rect(obj.selectedScreen,1),x0(i)-r);max(obj.rect(obj.selectedScreen,2),y0(i)-r);min(x0(i)+r,obj.rect(obj.selectedScreen,3));min(obj.rect(obj.selectedScreen,4),y0(i)+r)]);
+                ovalCoordinates=round([x0(i)-r;y0(i)-r;x0(i)+r;y0(i)+r]);
 
                 ttmp=t+GetSecs+obj.ifi(obj.selectedScreen);
              
@@ -158,7 +159,7 @@ classdef VS_loomingCircle < VStim
                 WaitSecs(obj.postLoomTime-(GetSecs-endStimTime));
                 Screen('Flip',obj.PTB_win(obj.selectedScreen));
                 endTrialTime=GetSecs;
-
+                obj.sendTTL(1,false);
                 %Screen('DrawTexture',obj.PTB_win,obj.masktex);
                 %[endSessionTime]=Screen('Flip',obj.PTB_win);
                 % Start wait: Code here is run during the waiting for the new session
@@ -175,7 +176,7 @@ classdef VS_loomingCircle < VStim
                 WaitSecs(obj.interTrialDelay-(GetSecs-endTrialTime));
             end
             WaitSecs(obj.postSessionDelay);
-             obj.sendTTL(1,false);
+           
             disp('Session ended');
         end
 

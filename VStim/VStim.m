@@ -1,9 +1,9 @@
 classdef (Abstract) VStim < handle
 
     properties (SetObservable, AbortSet = true, SetAccess=public)
-        visualFieldBackgroundLuminance = 64;
-        trialsPerCategory = 20;
-        preSessionDelay = 1;
+        visualFieldBackgroundLuminance = [0, 0, 128];
+        trialsPerCategory = 5;
+        preSessionDelay = 0;
         postSessionDelay = 0;   
         stimDuration = 1;
         interTrialDelay = [0]; %sec
@@ -56,7 +56,7 @@ classdef (Abstract) VStim < handle
         errorMsg=[]; %The message the object returns in case of an error
         simulationMode = false; %a switch that is used to prepare visual stimulation without applying the stimulation itself
         lastExcecutedTrial = 0; %parameter that keeps the number of the last excecuted trial
-        syncSquareSizePix = 700; % the size of the the corder square for syncing stims
+        syncSquareSizePix = 100; % the size of the the corder square for syncing stims
         syncSquareLuminosity=255; % The luminocity of the square used for syncing 
             syncMarkerOn = false;   
      end
@@ -111,10 +111,10 @@ classdef (Abstract) VStim < handle
 
             obj.whiteIdx=WhiteIndex(obj.PTB_win(1));
             obj.blackIdx=BlackIndex(obj.PTB_win(1));
-            if obj.visualFieldBackgroundLuminance<obj.blackIdx || obj.visualFieldBackgroundLuminance>obj.whiteIdx
-                disp('Visual field luminance is not within the possible range of values, please change...');
-                return;
-            end
+%             if obj.visualFieldBackgroundLuminance<obj.blackIdx || obj.visualFieldBackgroundLuminance>obj.whiteIdx
+%                 disp('Visual field luminance is not within the possible range of values, please change...');
+%                 return;
+%             end
             
             %get general information
             for i=1:obj.nPTBScreens

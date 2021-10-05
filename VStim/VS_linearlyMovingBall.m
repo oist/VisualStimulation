@@ -1,11 +1,11 @@
 classdef VS_linearlyMovingBall < VStim
     properties (SetAccess=public)
-        ballLuminosity = 255; %(L_high-L_low)/L_low
-        ballSize = 100; %pixels
+        ballLuminosity = 0; %(L_high-L_low)/L_low
+        ballSize = 10:50:210; %pixels
         numberOfDirections = 8;
         parallelsOffset = 0;
         randomize = true;
-        speed = 500; %pixel per second
+        speed = 100:200:600; %pixel per second
         rotation = 0;
         selectedScreen=3
     end
@@ -96,9 +96,9 @@ classdef VS_linearlyMovingBall < VStim
             
             disp('preparing all trajectories');
 
-            maximalNumberOfFrames=ceil(max(D0./obj.speed)./obj.ifi(obj.selectedScreen));
-            obj.ballTrajectoriesX=nan(nSpeeds,nOffsets,obj.numberOfDirections,maximalNumberOfFrames);
-            obj.ballTrajectoriesY=nan(nSpeeds,nOffsets,obj.numberOfDirections,maximalNumberOfFrames);
+            maximalNumberOfFrames=max(maxFrames);
+            obj.ballTrajectoriesX=nan(nSpeeds,nOffsets,obj.numberOfDirections, maximalNumberOfFrames);
+            obj.ballTrajectoriesY=nan(nSpeeds,nOffsets,obj.numberOfDirections, maximalNumberOfFrames);
             for i=1:nSpeeds
                 for j=1:nOffsets
                     for k=1:obj.numberOfDirections
@@ -130,9 +130,10 @@ classdef VS_linearlyMovingBall < VStim
             disp('Session starting');
 
             %main loop - start the session
-            obj.sendTTL(1,true); %session start trigger (also triggers the recording start)
+             %session start trigger (also triggers the recording start)
             WaitSecs(obj.preSessionDelay); %pre session wait time
             for i=1:obj.nTotTrials
+                obj.sendTTL(1,true);
                 pTmpSpeed=find(obj.speed==obj.speeds(i));
                 pTmpOffset=find(obj.parallelsOffset==obj.offsets(i));
                 pTmpPhi=find(phi==obj.directions(i));
@@ -162,6 +163,7 @@ classdef VS_linearlyMovingBall < VStim
                 obj.applyBackgound;  %set background mask and finalize drawing (drawing finished)
 
                 [endSessionTime]=Screen('Flip',obj.PTB_win(obj.selectedScreen));
+                obj.sendTTL(1,false);
                 % Start wait: Code here is run during the waiting for the new session
                 
                 % End wait
@@ -177,7 +179,7 @@ classdef VS_linearlyMovingBall < VStim
                 WaitSecs(obj.interTrialDelay-(GetSecs-endSessionTime));
             end
             WaitSecs(obj.postSessionDelay);
-            obj.sendTTL(1,false); %session end trigger
+             %session end trigger
             disp('Session ended');
         end
 

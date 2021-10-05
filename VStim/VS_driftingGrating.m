@@ -9,7 +9,7 @@ classdef VS_driftingGrating < VStim
         minSpatialFreq=.01;
         maxSpatialFreq=.5;
         spatialFreqStep=0.05;
-        contrast = 1;
+        contrast = .5;
     end
     properties (Hidden,Constant)
         defaultStimDuration=5; %stim duration in [sec] of each grating
@@ -64,9 +64,13 @@ classdef VS_driftingGrating < VStim
             
             % Build a procedural sine grating texture for a grating with a support of
             % res(1) x res(2) pixels and a RGB color offset of 0.5 -- a 50%
-            % gray. Change it's center to the user defined location
+            % gray. Change it's center to the user defined location 
+            
+            %do it blue for the cephs to avoid weird rainbow striping from the monitor
             for j=1:obj.nPTBScreens
-                [gratingtex(j)] = CreateProceduralSineGrating(obj.PTB_win(j), res(1), res(2), [0.5 0.5 0.5 1.0]);
+                [gratingtex(j)] = CreateProceduralSineGrating(obj.PTB_win(j), res(1), res(2), [0 0 0.5 1.0],[],0.5); 
+                
+             
             end
             
             obj.spatialFreq=[];
@@ -98,14 +102,14 @@ classdef VS_driftingGrating < VStim
             obj.flipMiss=nan(obj.trialsPerCategory,numFrames);
             
             WaitSecs(obj.preSessionDelay);
-            obj.sendTTL(1,true);
+          
             
             % Animation loop
             for i=1:obj.trialsPerCategory
                 disp(['Trial ' num2str(i) '/' num2str(obj.trialsPerCategory)]);
                 
-                obj.sendTTL(2,true);
-                Screen('FillOval',obj.PTB_win(1),obj.visualFieldBackgroundLuminance);
+                obj.sendTTL(1,true);
+               % Screen('FillOval',obj.PTB_win(1),obj.visualFieldBackgroundLuminance);
                 
                 for frame= 1: numFrames
                     phase = phase + phaseincrement(i);
@@ -123,19 +127,19 @@ classdef VS_driftingGrating < VStim
                 
            
                 for j=1:obj.nPTBScreens
-                    Screen('FillRect',obj.PTB_win(j),obj.visualFieldBackgroundLuminance);
+                    Screen('FillRect',obj.PTB_win(j),[0,0,obj.visualFieldBackgroundLuminance]);
                 end
                 obj.applyBackgound;
                 for j=1:obj.nPTBScreens
                     Screen('Flip',obj.PTB_win(j));
                 end
                 
+               % WaitSecs(obj.interTrialDelay);  
+                obj.sendTTL(1,false);
                 WaitSecs(obj.interTrialDelay);
                 disp('Trial ended');
-                WaitSecs(obj.interTrialDelay);
-                
             end
-            obj.sendTTL(1,false);
+         
             WaitSecs(obj.postSessionDelay);
             disp('Session ended');
             
