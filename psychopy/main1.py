@@ -1,11 +1,15 @@
 from psychopy import visual, data, logging
 import os
 from vstim import drifting_gratings, DriftingGratingsParams
+from serial import Serial
 
 if __name__ == "__main__":
     logdir = os.path.dirname(os.path.abspath(__file__))
     logfile = os.path.join(logdir, "log_raw.log")
     exp_name = "test"
+
+    # initialize DLP-IO8-G
+    dlp = Serial(port="COM3", baudrate=115200)
 
     # this is to log all events
     log_file = logging.LogFile(os.path.join(logdir, "log_raw.log"), level=logging.EXP)
@@ -30,7 +34,8 @@ if __name__ == "__main__":
         interval_time=2 # seconds
     )
 
-    drifting_gratings(win, exp_handler, p)
+    drifting_gratings_dlp(win, exp_handler, p)
 
     exp_handler.close()
     win.close()
+    dlp.close()

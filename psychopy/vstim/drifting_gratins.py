@@ -12,7 +12,7 @@ class DriftingGratingsParams:
     trial_time: float = 3 # seconds
     interval_time: float = 2 # seconds
 
-def drifting_gratings(win, exp_handler, p: DriftingGratingsParams):
+def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, code_on=b'1', code_off=b'Q'):
     """
     This function generates drifting gratings pattern on a screen.
 
@@ -24,6 +24,12 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams):
         ExperimentHandler object must be set up by the parent python code and passed to this function.
     p:
         Parameters for drifting gratings
+    dlp: serial.Serial object
+        This is to generate TTL pulses via DLP-IO8-G. If you don't need this, make this value None
+    code_on: str
+        Byte code to switch to HIGH
+    code_off: str
+        Byte code to switch to LOW
     """
 
     framerate = win.getActualFrameRate()
@@ -55,16 +61,20 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams):
             # show trial frame, i.e. drifting gratings
             phase_clock.reset()
             for i in range(trial_frames):
+                frame_counter += 1
                 grat.phase=cond[1]*phase_clock.getTime()
                 grat.draw()
+                if dlp is not None:
+                    dlp.write(code_on)
                 win.flip()
-                frame_counter += 1
             
             # show inverval frames, i.e. blank image
             for i in range(interval_frames):
-                win.flip()
                 frame_counter += 1
-            
+                if dlp is not None:
+                    dlp.write(code_off)
+                win.flip()
+
             keys = event.getKeys()
             if any(k in ['q','escape'] for k in keys):
                 stop_loop=True
