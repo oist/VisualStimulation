@@ -27,8 +27,8 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams):
     """
 
     framerate = win.getActualFrameRate()
-    trial_frames = int(p.trial_time * framerate) # conver to time to frames
-    interval_frames = int(p.trial_time * framerate) # conver to time to frames
+    trial_frames = int(p.trial_time * framerate) # conver to secs to frames
+    interval_frames = int(p.trial_time * framerate) # conver to secs to frames
 
     conditions = [[i,j,k] for i in p.SFs for j in p.TFs for k in p.ORIs]
 
