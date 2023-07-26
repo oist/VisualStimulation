@@ -1,7 +1,11 @@
 from psychopy import visual, data, event, logging
 import os
-from vstim import drifting_gratings, DriftingGratingsParams
 from serial import Serial
+
+import sys
+sys.path.append("..")
+from vstim import flashing, FlashingParams
+
 
 if __name__ == "__main__":
     logdir = os.path.dirname(os.path.abspath(__file__))
@@ -25,13 +29,10 @@ if __name__ == "__main__":
                         fullscr=True, screen=1,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
-    p = DriftingGratingsParams(
-        SFs=[0.01,0.03,0.05,0.07,0.1],
-        TFs=[1,3,5,7,12],
-        ORIs=[0,45,90,135,180],
-        repeats=5, # number of repeats
-        trial_time=3, # seconds
-        interval_time=2 # seconds
+    p = FlashingParams(
+        on_time=2,
+        off_time=3,
+        repeats=10,
     )
 
     # wait for TTL HIGH in channel 2 or keyboard input
@@ -44,7 +45,7 @@ if __name__ == "__main__":
         if keys:
             break
 
-    drifting_gratings(win, exp_handler, p, dlp=dlp)
+    flashing(win, exp_handler, p, dlp=dlp)
 
     exp_handler.close()
     win.close()

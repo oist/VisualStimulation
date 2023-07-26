@@ -42,7 +42,6 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
     phase_clock = core.Clock() # Will be used to as input to the grating phase
 
     ###### Initiate Stimulus ########
-    event.waitKeys() # wait until user hits some key
     frame_counter = 0
     phase_clock.reset()
     stop_loop=False
@@ -60,19 +59,19 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
 
             # show trial frame, i.e. drifting gratings
             phase_clock.reset()
+            if dlp is not None:
+                dlp.write(code_on)
             for i in range(trial_frames):
                 frame_counter += 1
                 grat.phase=cond[1]*phase_clock.getTime()
                 grat.draw()
-                if dlp is not None:
-                    dlp.write(code_on)
                 win.flip()
             
             # show inverval frames, i.e. blank image
+            if dlp is not None:
+                dlp.write(code_off)
             for i in range(interval_frames):
                 frame_counter += 1
-                if dlp is not None:
-                    dlp.write(code_off)
                 win.flip()
 
             keys = event.getKeys()
