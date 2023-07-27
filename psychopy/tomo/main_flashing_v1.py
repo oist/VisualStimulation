@@ -12,6 +12,9 @@ if __name__ == "__main__":
     logfile = os.path.join(logdir, "log_raw.log")
     exp_name = "test"
 
+    # initialize DLP-IO8-G
+    dlp = Serial(port="COM3", baudrate=115200)
+
     # this is to log all events
     log_file = logging.LogFile(os.path.join(logdir, "log_raw.log"), level=logging.EXP)
     # this is to log important events
@@ -32,13 +35,17 @@ if __name__ == "__main__":
         repeats=10,
     )
 
-    # wait for keyboard input
+    # wait for TTL HIGH in channel 2 or keyboard input
     while True:
+        dlp.write(b'S')  # request to read
+        x = dlp.read(3).decode('utf-8')
+        if x[0] == '1':
+            break # the line is HIGH
         keys = event.getKeys()
         if keys:
             break
 
-    flashing(win, exp_handler, p)
+    flashing(win, exp_handler, p, dlp=dlp)
 
     exp_handler.close()
     win.close()
