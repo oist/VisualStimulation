@@ -44,21 +44,21 @@ def flashing(win, exp_handler, p: FlashingParams, dlp=None, code_on=b'1', code_o
         exp_handler.addData('frame', frame_counter)
         exp_handler.addData('ON', 1)
         exp_handler.nextEntry()
-        if dlp is not None:
-            dlp.write(code_on)
         for i in range(on_frames):
             frame_counter += 1
             win.color = [1, 1, 1]
+            if dlp is not None:
+                dlp.write(code_on)
             win.flip()
 
         exp_handler.addData('frame', frame_counter)
         exp_handler.addData('ON', 0)
         exp_handler.nextEntry()
-        if dlp is not None:
-            dlp.write(code_off)
         for i in range(off_frames):
             frame_counter += 1
             win.color = [-1, -1, -1]
+            if dlp is not None:
+                dlp.write(code_off)
             win.flip()
 
         keys = event.getKeys()
