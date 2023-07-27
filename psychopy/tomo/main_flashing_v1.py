@@ -1,5 +1,5 @@
 from psychopy import visual, data, event, logging
-import os
+import os, time
 from serial import Serial
 
 import sys
@@ -8,12 +8,28 @@ from vstim import flashing, FlashingParams
 
 
 if __name__ == "__main__":
-    logdir = os.path.dirname(os.path.abspath(__file__))
-    logfile = os.path.join(logdir, "log_raw.log")
+    """
+    This script generates a simple flashing stimulation (switches between white and black screen).
+    
+    DLP-IO8-G channel assignments:
+    line 1 is used to send TTL pulse to external DAQ to notify the timing of the session. line 1 is HIGH when the screen is white and LOW when the screen is black.
+    line 2 is used to receive session start signal from external DAQ. As soon as line 2 receives HGIH signal, the session is started. Until then, the screen stays black.
+    line 3 is used to send session complete signal to external DAQ. When the session is complete, line 3 becomes HIGH for 0.5 seconds.
+    """
+
+    ###### PARAMETERS BEGIN ######
+    com_port = "COM3" # for DLP-IO8-G
     exp_name = "test"
+    logdir = os.path.dirname(os.path.abspath(__file__))
+    p = FlashingParams(
+        on_time=2,
+        off_time=3,
+        repeats=10,
+    )
+    ###### PARAMETERS END ######
 
     # initialize DLP-IO8-G
-    dlp = Serial(port="COM3", baudrate=115200)
+    dlp = Serial(port=com_port, baudrate=115200)
 
     # this is to log all events
     log_file = logging.LogFile(os.path.join(logdir, "log_raw.log"), level=logging.EXP)
@@ -29,12 +45,6 @@ if __name__ == "__main__":
                         fullscr=True, screen=1,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
-    p = FlashingParams(
-        on_time=2,
-        off_time=3,
-        repeats=10,
-    )
-
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
         dlp.write(b'S')  # request to read
@@ -45,8 +55,15 @@ if __name__ == "__main__":
         if keys:
             break
 
-    flashing(win, exp_handler, p, dlp=dlp)
+    # start flashing; generate TTL pulses from channel 1
+    flashing(win, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 
     exp_handler.close()
     win.close()
+
+    # using channel 3, send TTL to DAQ to notify the completion of the session
+    dlp.write(b'3')
+    time.sleep(0.5)
+    dlp.write(b'E')
+
     dlp.close()

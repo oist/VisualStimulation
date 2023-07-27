@@ -44,6 +44,7 @@ def flashing(win, exp_handler, p: FlashingParams, dlp=None, code_on=b'1', code_o
         exp_handler.addData('frame', frame_counter)
         exp_handler.addData('ON', 1)
         exp_handler.nextEntry()
+        print("HIGH")
         for i in range(on_frames):
             frame_counter += 1
             win.color = [1, 1, 1]
@@ -54,6 +55,7 @@ def flashing(win, exp_handler, p: FlashingParams, dlp=None, code_on=b'1', code_o
         exp_handler.addData('frame', frame_counter)
         exp_handler.addData('ON', 0)
         exp_handler.nextEntry()
+        print("LOW")
         for i in range(off_frames):
             frame_counter += 1
             win.color = [-1, -1, -1]
