@@ -1,5 +1,6 @@
 from psychopy import visual, data, event, logging
 import os, time
+from datetime import datetime
 from serial import Serial
 
 import sys
@@ -19,7 +20,7 @@ if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
     com_port = "COM3" # for DLP-IO8-G
-    exp_name = "test"
+    exp_name = "flashing"
     logdir = os.path.dirname(os.path.abspath(__file__))
     p = FlashingParams(
         on_time=2,
@@ -31,17 +32,21 @@ if __name__ == "__main__":
     # initialize DLP-IO8-G
     dlp = Serial(port=com_port, baudrate=115200)
 
+    now = datetime.now()
+    dt_string = now.strftime("%Y%m%d_%H%M%S")
+    log_filename_raw = os.path.join(logdir, f"log_{exp_name}_{dt_string}_raw.log")
+    log_filename =  os.path.join(logdir, f"log_{exp_name}_{dt_string}.csv")
     # this is to log all events
-    log_file = logging.LogFile(os.path.join(logdir, "log_raw.log"), level=logging.EXP)
+    log_file = logging.LogFile(log_filename_raw, level=logging.EXP)
     # this is to log important events
     exp_handler = data.ExperimentHandler(name=exp_name, version='',
                                         extraInfo={},
                                         runtimeInfo=None,
-                                        dataFileName=os.path.join(logdir, "log.csv"),
+                                        dataFileName=log_filename,
                                         saveWideText=True,
                                         savePickle=False)
 
-    win = visual.Window(monitor='projector', size=[2560,1440], 
+    win = visual.Window(monitor='projector', size=[1360,768], 
                         fullscr=True, screen=1,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
@@ -65,5 +70,4 @@ if __name__ == "__main__":
     dlp.write(b'3')
     time.sleep(0.5)
     dlp.write(b'E')
-
     dlp.close()

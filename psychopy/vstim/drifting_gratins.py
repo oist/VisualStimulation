@@ -56,6 +56,7 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
             exp_handler.addData('Ori', cond[2])
             exp_handler.addData('frame', frame_counter)
             exp_handler.addData('frame_time', phase_clock.getTime())
+            print('Ori=', cond[2], ', SF=', cond[0], ', TF=', cond[1])
 
             # show trial frame, i.e. drifting gratings
             phase_clock.reset()
@@ -68,6 +69,7 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
                 win.flip()
             
             # show inverval frames, i.e. blank image
+            print("interval...")
             for i in range(interval_frames):
                 frame_counter += 1
                 if dlp is not None:
