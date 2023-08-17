@@ -25,7 +25,7 @@ if __name__ == "__main__":
     p = FlashingParams(
         on_time=2,
         off_time=3,
-        repeats=10,
+        repeats=100,
     )
     ###### PARAMETERS END ######
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
                                         saveWideText=True,
                                         savePickle=False)
 
-    win = visual.Window(monitor='projector', size=[1360,768], 
+    win = visual.Window(monitor='projector', size=[1280,720], 
                         fullscr=True, screen=1,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
@@ -59,7 +59,8 @@ if __name__ == "__main__":
         keys = event.getKeys()
         if keys:
             break
-
+    
+    time.sleep(1.0) # wait 1 sec before proceeding
     # start flashing; generate TTL pulses from channel 1
     flashing(win, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 

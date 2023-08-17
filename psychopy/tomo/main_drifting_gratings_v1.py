@@ -1,39 +1,58 @@
 from psychopy import visual, data, event, logging
-import os
-from vstim import drifting_gratings, DriftingGratingsParams
-from vstim import flashing, FlashingParams
+import os, time
+from datetime import datetime
 from serial import Serial
 
+import sys
+sys.path.append("..")
+from vstim import drifting_gratings, DriftingGratingsParams
+
 if __name__ == "__main__":
+    """
+    """
+
+    ###### PARAMETERS BEGIN ######
+    com_port = "COM3" # for DLP-IO8-G
+    exp_name = "DRG"
     logdir = os.path.dirname(os.path.abspath(__file__))
-    logfile = os.path.join(logdir, "log_raw.log")
-    exp_name = "test"
+    p = DriftingGratingsParams(
+        SFs=[0.01,0.05,0.1],
+        TFs=[1,5,12],
+        ORIs=[0,45,90,135,180],
+        repeats=3, # number of repeats
+        trial_time=2, # seconds
+        interval_time=3 # seconds
+    )
+    # p = DriftingGratingsParams(
+    #     SFs=[0.01,0.03,0.05,0.07,0.1],
+    #     TFs=[1,3,5,7,12],
+    #     ORIs=[0,45,90,135,180],
+    #     repeats=5, # number of repeats
+    #     trial_time=3, # seconds
+    #     interval_time=3 # seconds
+    # )
+    ###### PARAMETERS END ######
 
     # initialize DLP-IO8-G
-    dlp = Serial(port="COM3", baudrate=115200)
+    dlp = Serial(port=com_port, baudrate=115200)
 
+    now = datetime.now()
+    dt_string = now.strftime("%Y%m%d_%H%M%S")
+    log_filename_raw = os.path.join(logdir, f"log_{exp_name}_{dt_string}_raw.log")
+    log_filename =  os.path.join(logdir, f"log_{exp_name}_{dt_string}.csv")
     # this is to log all events
-    log_file = logging.LogFile(os.path.join(logdir, "log_raw.log"), level=logging.EXP)
+    log_file = logging.LogFile(log_filename_raw, level=logging.EXP)
     # this is to log important events
     exp_handler = data.ExperimentHandler(name=exp_name, version='',
                                         extraInfo={},
                                         runtimeInfo=None,
-                                        dataFileName=os.path.join(logdir, "log.csv"),
+                                        dataFileName=log_filename,
                                         saveWideText=True,
                                         savePickle=False)
 
-    win = visual.Window(monitor='projector', size=[2560,1440], 
+    win = visual.Window(monitor='projector', size=[1280,720],
                         fullscr=True, screen=1,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
-
-    p = DriftingGratingsParams(
-        SFs=[0.01,0.03,0.05,0.07,0.1],
-        TFs=[1,3,5,7,12],
-        ORIs=[0,45,90,135,180],
-        repeats=5, # number of repeats
-        trial_time=3, # seconds
-        interval_time=2 # seconds
-    )
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
@@ -45,9 +64,15 @@ if __name__ == "__main__":
         if keys:
             break
 
-    # drifting_gratings(win, exp_handler, p, dlp=dlp)
-    drifting_gratings(win, exp_handler, p)
+    time.sleep(1.0) # wait 1 sec before proceeding
+    # start session; generate TTL pulses from channel 1
+    drifting_gratings(win, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 
     exp_handler.close()
     win.close()
+
+    # using channel 3, send TTL to DAQ to notify the completion of the session
+    dlp.write(b'3')
+    time.sleep(0.5)
+    dlp.write(b'E')
     dlp.close()
