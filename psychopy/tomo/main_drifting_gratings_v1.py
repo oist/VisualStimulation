@@ -16,8 +16,8 @@ if __name__ == "__main__":
     exp_name = "DRG"
     logdir = os.path.dirname(os.path.abspath(__file__))
     p = DriftingGratingsParams(
-        SFs=[0.01,0.05,0.1],
-        TFs=[1,5,12],
+        SFs=[0.01,0.025,0.05],
+        TFs=[1,5,10],
         ORIs=[0,45,90,135,180],
         repeats=3, # number of repeats
         trial_time=2, # seconds

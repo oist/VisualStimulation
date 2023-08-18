@@ -55,7 +55,6 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
             exp_handler.addData('TF', cond[1])
             exp_handler.addData('Ori', cond[2])
             exp_handler.addData('frame', frame_counter)
-            exp_handler.addData('frame_time', phase_clock.getTime())
             print('Ori=', cond[2], ', SF=', cond[0], ', TF=', cond[1])
 
             # show trial frame, i.e. drifting gratings
