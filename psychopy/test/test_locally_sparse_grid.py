@@ -4,7 +4,7 @@ from serial import Serial
 
 import sys
 sys.path.append("..")
-from vstim import flashing, FlashingParams
+from vstim import locally_sparse_noise, LocallySparseNoiseParams
 
 
 if __name__ == "__main__":
@@ -22,14 +22,13 @@ if __name__ == "__main__":
                                         saveWideText=True,
                                         savePickle=False)
 
-    win = visual.Window(monitor='projector', size=[2560,1440], 
-                        fullscr=True, screen=1,
+    win = visual.Window(monitor='projector', size=[1280, 720], 
+                        fullscr=False, screen=1,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
-    p = FlashingParams(
-        on_time=2,
-        off_time=3,
-        repeats=10,
+    p = LocallySparseNoiseParams(
+        npy_filepath="LSG/LSG_4DEG.npy",
+        stim_time=1.0
     )
 
     # wait for keyboard input
@@ -38,7 +37,7 @@ if __name__ == "__main__":
         if keys:
             break
 
-    flashing(win, exp_handler, p)
+    locally_sparse_noise(win, exp_handler, p)
 
     exp_handler.close()
     win.close()
