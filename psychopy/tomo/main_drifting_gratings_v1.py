@@ -13,24 +13,17 @@ if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
     com_port = "COM3" # for DLP-IO8-G
-    exp_name = "DRG"
-    logdir = os.path.dirname(os.path.abspath(__file__))
+    exp_name = "test1"
+    logdir = r"D:\experiments\20230922_squid_48dph_cal520_LSN_DRG"
     p = DriftingGratingsParams(
-        SFs=[0.01,0.025,0.05],
-        TFs=[1,5,10],
-        ORIs=[0,45,90,135,180],
-        repeats=3, # number of repeats
-        trial_time=2, # seconds
-        interval_time=3 # seconds
+        # SFs=[0.01, 0.025, 0.05],
+        SFs=[0.01, 0.025,],
+        TFs=[0, 1.5, 3.0],
+        ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
+        repeats=15, # number of repeats
+        trial_time=2.0, # seconds
+        interval_time=1.0 # seconds
     )
-    # p = DriftingGratingsParams(
-    #     SFs=[0.01,0.03,0.05,0.07,0.1],
-    #     TFs=[1,3,5,7,12],
-    #     ORIs=[0,45,90,135,180],
-    #     repeats=5, # number of repeats
-    #     trial_time=3, # seconds
-    #     interval_time=3 # seconds
-    # )
     ###### PARAMETERS END ######
 
     # initialize DLP-IO8-G
@@ -54,7 +47,7 @@ if __name__ == "__main__":
                         fullscr=True, screen=1,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
-    # wait for TTL HIGH in channel 2 or keyboard input
+    # wait for TTL HIGH in DLP-IO8G (channel 2) or keyboard input
     while True:
         dlp.write(b'S')  # request to read
         x = dlp.read(3).decode('utf-8')

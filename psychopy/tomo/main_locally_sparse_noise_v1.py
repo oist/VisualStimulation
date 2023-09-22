@@ -13,10 +13,10 @@ if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
     com_port = "COM3" # for DLP-IO8-G
-    exp_name = "DRG"
-    logdir = os.path.dirname(os.path.abspath(__file__))
+    exp_name = "test2"
+    logdir = r"D:\experiments\20230922_squid_48dph_cal520_LSN_DRG"
     p = LocallySparseNoiseParams(
-        npy_filepath="LSG/LSG_4DEG.npy",
+        npy_filepath="LSN/EVM3010_6cm_4DEG.npy",
         stim_time=1.0
     )
     ###### PARAMETERS END ######
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     time.sleep(1.0) # wait 1 sec before proceeding
     # start session; generate TTL pulses from channel 1
-    locally_sparse_noise(win, exp_handler, p)
+    locally_sparse_noise(win, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 
     exp_handler.close()
     win.close()
