@@ -73,6 +73,7 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
                 frame_counter += 1
                 if dlp is not None:
                     dlp.write(code_off)
+                win.color = [0, 0, 0]
                 win.flip()
 
             keys = event.getKeys()
