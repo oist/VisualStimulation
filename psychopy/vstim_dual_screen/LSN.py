@@ -45,6 +45,8 @@ def LSN_luminance(win_lum, win_pol, exp_handler, p: LocallySparseNoiseParams, dl
     stop_loop=False
 
     for i in range(mat.shape[0]):
+        if i%10 == 0:
+            print(f"{i}/{mat.shape[0]}")
         exp_handler.addData('frame', frame_counter)
         exp_handler.addData('index', i)
         exp_handler.nextEntry()
@@ -96,20 +98,20 @@ def LSN_polarization(win_lum, win_pol, exp_handler, p: LocallySparseNoiseParams,
 
     mat = np.load(p.npy_filepath)
 
-    # make luminance screen white
-    win_lum.color = [1, 1, 1]
-    win_lum.flip()
-
     # initiate stimulus
     frame_counter = 0
     stop_loop=False
 
     for i in range(mat.shape[0]):
+        if i%10 == 0:
+            print(f"{i}/{mat.shape[0]}")
         exp_handler.addData('frame', frame_counter)
         exp_handler.addData('index', i)
         exp_handler.nextEntry()
 
         image = mat[i, :, :]
+        image[np.abs(image) > 0] = 1
+        image[image ==0 ] = -1
         stim = visual.ImageStim(win_pol, image=image, size=win_pol.size)
         for j in range(stim_frames):
             frame_counter += 1
@@ -120,7 +122,7 @@ def LSN_polarization(win_lum, win_pol, exp_handler, p: LocallySparseNoiseParams,
                     dlp.write(code_off)
             stim.draw()
             win_pol.flip()
-            win_lum.color = [1, 1, 1]
+            win_lum.color = [0, 0, 0]
             win_lum.flip()
 
         keys = event.getKeys()
