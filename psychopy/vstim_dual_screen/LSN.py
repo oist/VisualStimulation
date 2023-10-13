@@ -122,7 +122,7 @@ def LSN_polarization(win_lum, win_pol, exp_handler, p: LocallySparseNoiseParams,
                     dlp.write(code_off)
             stim.draw()
             win_pol.flip()
-            win_lum.color = [0, 0, 0]
+            win_lum.color = [1, 1, 1]
             win_lum.flip()
 
         keys = event.getKeys()

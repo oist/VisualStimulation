@@ -12,9 +12,9 @@ if __name__ == "__main__":
     Main function to generate locally sparse noise (LSN) stimulus.
     """
     ###### PARAMETERS BEGIN ######
-    exp_name = "test2"
-    mode = "lum_only" # choices are []"lum_only", "pol_only"]
-    logdir = r"D:\experiments\20230922_squid_48dph_cal520_LSN_DRG"
+    exp_name = "squid1_rec4"
+    mode = "lum_only" # choices are ["lum_only", "pol_only"]
+    logdir = r"D:\experiments\20231012"
     p = LocallySparseNoiseParams(
         npy_filepath="LSN/EVM3010_6cm_4DEG.npy",
         stim_time=1.0
@@ -40,11 +40,11 @@ if __name__ == "__main__":
                                         savePickle=False)
 
     win_lum = visual.Window(monitor='projector', size=[1280,720],
-                            fullscr=True, screen=1,
-                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
-    win_pol = visual.Window(monitor='test', size=[1280,800],
                             fullscr=True, screen=2,
-                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+                            units='pix', color=[-1,-1,-1], allowGUI=True, waitBlanking=True)
+    win_pol = visual.Window(monitor='test', size=[1280,800],
+                            fullscr=True, screen=1,
+                            units='pix', color=[-1,-1,-1], allowGUI=True, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
