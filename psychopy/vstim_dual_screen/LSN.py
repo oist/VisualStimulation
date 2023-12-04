@@ -111,7 +111,7 @@ def LSN_polarization(win_lum, win_pol, exp_handler, p: LocallySparseNoiseParams,
 
         image = mat[i, :, :]
         image[np.abs(image) > 0] = 1
-        image[image ==0 ] = -1
+        image[image == 0] = -1
         stim = visual.ImageStim(win_pol, image=image, size=win_pol.size)
         for j in range(stim_frames):
             frame_counter += 1
@@ -122,8 +122,6 @@ def LSN_polarization(win_lum, win_pol, exp_handler, p: LocallySparseNoiseParams,
                     dlp.write(code_off)
             stim.draw()
             win_pol.flip()
-            win_lum.color = [1, 1, 1]
-            win_lum.flip()
 
         keys = event.getKeys()
         if any(k in ['q','escape'] for k in keys):
