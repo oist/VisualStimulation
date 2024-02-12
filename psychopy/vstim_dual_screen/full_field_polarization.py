@@ -39,19 +39,18 @@ def FF_polarization(win_lum, win_pol, exp_handler, p: FullFieldPolarizationParam
     on_frames = int(p.on_time * framerate) # conver from secs to frames
     off_frames = int(p.off_time * framerate) # conver from secs to frames
 
-    angles = np.array([(e-45)/45 for e in p.ORIs]) # convert degree [0, 90] to [-1, 1]
-
     # initiate stimulus
     frame_counter = 0
     stop_loop=False
 
     for rep in range(p.repeats):
-        np.random.shuffle(angles)
-        for i in angles:
+        np.random.shuffle(p.ORIs)
+        for ori in p.ORIs:
+            i = (ori-45)/45 # convert degree [0, 90] to [-1, 1]
             exp_handler.addData('frame', frame_counter)
-            exp_handler.addData('angle', i)
+            exp_handler.addData('angle', ori)
             exp_handler.nextEntry()
-            print(i)
+            print(ori)
             if dlp is not None:
                 dlp.write(code_off)
             for k in range(off_frames):
@@ -75,11 +74,6 @@ def FF_polarization(win_lum, win_pol, exp_handler, p: FullFieldPolarizationParam
             event.clearEvents()
             if stop_loop == True:
                 break
-    
-    # before closing, record the last frame
-    exp_handler.addData('frame', frame_counter)
-    exp_handler.addData('angle', i)
-    exp_handler.nextEntry()
 
 def FF_polarization2(win_lum, win_pol, exp_handler, p: FullFieldPolarizationParams, dlp=None, code_on=b'1', code_off=b'Q'):
     """
@@ -110,34 +104,33 @@ def FF_polarization2(win_lum, win_pol, exp_handler, p: FullFieldPolarizationPara
     on_frames = int(p.on_time * framerate) # conver from secs to frames
     off_frames = int(p.off_time * framerate) # conver from secs to frames
 
-    angles = np.array([(e-45)/45 for e in p.ORIs]) # convert degree [0, 90] to [-1, 1]
-
     # initiate stimulus
     frame_counter = 0
     stop_loop=False
 
     for rep in range(p.repeats):
-        np.random.shuffle(angles)
-        for i in angles:
+        np.random.shuffle(p.ORIs)
+        for ori in p.ORIs:
+            i = (ori-45)/45 # convert degree [0, 90] to [-1, 1]
             exp_handler.addData('frame', frame_counter)
-            exp_handler.addData('angle', i)
+            exp_handler.addData('angle', ori)
             exp_handler.nextEntry()
-            print(i)
+            print(ori)
             if dlp is not None:
                 dlp.write(code_off)
             for k in range(off_frames):
                 frame_counter += 1
                 win_pol.color = [0, 0, 0]
+                win_lum.color = [1, 1, 1]
                 win_pol.flip()
-                win_lum.color = [0, 0, 0]
                 win_lum.flip()
             if dlp is not None:
                 dlp.write(code_on)
             for k in range(on_frames):
                 frame_counter += 1
                 win_pol.color = [i, i, i]
+                win_lum.color = [1, 1, 1]
                 win_pol.flip()
-                win_lum.color = [0, 0, 0]
                 win_lum.flip()
 
             keys = event.getKeys()
@@ -146,8 +139,3 @@ def FF_polarization2(win_lum, win_pol, exp_handler, p: FullFieldPolarizationPara
             event.clearEvents()
             if stop_loop == True:
                 break
-    
-    # before closing, record the last frame
-    exp_handler.addData('frame', frame_counter)
-    exp_handler.addData('angle', i)
-    exp_handler.nextEntry()
