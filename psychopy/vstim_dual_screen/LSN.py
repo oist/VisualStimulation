@@ -112,7 +112,7 @@ def LSN_polarization(win_lum, win_pol, exp_handler, p: LocallySparseNoiseParams,
         image = mat[i, :, :]
         image[np.abs(image) > 0] = 1
         image[image == 0] = -1
-        stim = visual.ImageStim(win_pol, image=image, size=win_pol.size)
+        stim = visual.ImageStim(win_pol, image=image, size=win_lum.size, pos=(0, -40))
         for j in range(stim_frames):
             frame_counter += 1
             if dlp is not None:
