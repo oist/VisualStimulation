@@ -38,6 +38,8 @@ def locally_sparse_noise(win, exp_handler, p: LocallySparseNoiseParams, dlp=None
     stop_loop=False
 
     for i in range(mat.shape[0]):
+        if i%10 == 0:
+            print(f"{i}/{mat.shape[0]}")
         exp_handler.addData('frame', frame_counter)
         exp_handler.addData('index', i)
         exp_handler.nextEntry()
