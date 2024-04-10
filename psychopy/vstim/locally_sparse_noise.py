@@ -8,7 +8,7 @@ class LocallySparseNoiseParams:
     npy_filepath: str # path to the pre-computed LSN matrix
     stim_time: float = 1.0 # Length of each stimulation in seconds
 
-def locally_sparse_noise(win, exp_handler, p: LocallySparseNoiseParams, dlp=None, code_on=b'1', code_off=b'Q'):
+def locally_sparse_noise(win, exp_handler, p: LocallySparseNoiseParams, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
     """
     This function generates locally sparse noise (LSN) stimulus.
 
@@ -54,11 +54,15 @@ def locally_sparse_noise(win, exp_handler, p: LocallySparseNoiseParams, dlp=None
                 else:
                     dlp.write(code_off)
             stim.draw()
+            if save_movie:
+                win.getMovieFrame()
             win.flip()
-        
+
         keys = event.getKeys()
         if any(k in ['q','escape'] for k in keys):
             stop_loop = True
         event.clearEvents()
         if stop_loop == True:
             break
+    if save_movie:
+        win.saveMovieFrames("stimulis.mp4")

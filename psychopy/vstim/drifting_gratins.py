@@ -12,7 +12,7 @@ class DriftingGratingsParams:
     trial_time: float = 3 # seconds
     interval_time: float = 2 # seconds
 
-def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, code_on=b'1', code_off=b'Q'):
+def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
     """
     This function generates drifting gratings pattern on a screen.
 
@@ -65,6 +65,8 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
                 grat.draw()
                 if dlp is not None:
                     dlp.write(code_on)
+                if save_movie:
+                    win.getMovieFrame()
                 win.flip()
             
             # show inverval frames, i.e. blank image
@@ -74,6 +76,8 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
                 if dlp is not None:
                     dlp.write(code_off)
                 win.color = [0, 0, 0]
+                if save_movie:
+                    win.getMovieFrame()
                 win.flip()
 
             keys = event.getKeys()
@@ -84,3 +88,5 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
             exp_handler.nextEntry()
         if stop_loop==True:
             break
+    if save_movie:
+        win.saveMovieFrames("stimulis.mp4")
