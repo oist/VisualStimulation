@@ -34,7 +34,7 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
 
     framerate = win.getActualFrameRate()
     trial_frames = int(p.trial_time * framerate) # conver to secs to frames
-    interval_frames = int(p.trial_time * framerate) # conver to secs to frames
+    interval_frames = int(p.interval_time * framerate) # conver to secs to frames
 
     conditions = [[i,j,k] for i in p.SFs for j in p.TFs for k in p.ORIs]
 
@@ -59,22 +59,22 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
 
             # show trial frame, i.e. drifting gratings
             phase_clock.reset()
+            if dlp is not None:
+                dlp.write(code_on)
             for i in range(trial_frames):
                 frame_counter += 1
-                grat.phase=cond[1]*phase_clock.getTime()
+                grat.phase = cond[1]*phase_clock.getTime()
                 grat.draw()
-                if dlp is not None:
-                    dlp.write(code_on)
                 if save_movie:
                     win.getMovieFrame()
                 win.flip()
+            if dlp is not None:
+                dlp.write(code_off)
             
             # show inverval frames, i.e. blank image
             print("interval...")
             for i in range(interval_frames):
                 frame_counter += 1
-                if dlp is not None:
-                    dlp.write(code_off)
                 win.color = [0, 0, 0]
                 if save_movie:
                     win.getMovieFrame()

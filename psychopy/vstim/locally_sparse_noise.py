@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 class LocallySparseNoiseParams:
     npy_filepath: str # path to the pre-computed LSN matrix
     stim_time: float = 1.0 # Length of each stimulation in seconds
+    stim_mode: str = "on_only" # "on_off", "on_only", "off_only"
 
 def locally_sparse_noise(win, exp_handler, p: LocallySparseNoiseParams, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
     """
@@ -45,6 +46,12 @@ def locally_sparse_noise(win, exp_handler, p: LocallySparseNoiseParams, dlp=None
         exp_handler.nextEntry()
 
         image = mat[i, :, :]
+        if p.stim_mode == "on_off":
+            pass
+        elif p.stim_mode == "on_only":
+            image = (-1)*np.ones_like(image) + 2 * (image != 0)
+        elif p.stim_mode == "off_only":
+            image = (1)*np.ones_like(image) - 2 * (image != 0)
         stim = visual.ImageStim(win, image=image, size=win.size)
         for j in range(stim_frames):
             frame_counter += 1

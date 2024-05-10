@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 class TemporalChirpParams:
     f0: float = 0.5 # Frequency in Hz at time t=0.
     f1: float = 10 # Frequency in Hz at time t = end
+    method: str = "linear" # Method of frequency modulation; "linear", "logarithmic", "hyperbolic", "quadratic"
     repeats: int = 10 # number of repeats
     trial_time: float = 20 # The total length of the chirp stimulation
     interval_time: float = 2 # Interval between repeats in seconds
@@ -37,7 +38,7 @@ def temporal_chirp(win, exp_handler, p: TemporalChirpParams, dlp=None, code_on=b
     interval_frames = int(p.trial_time * framerate) # conver to secs to frames
 
     t = np.linspace(0, p.trial_time, int(p.trial_time*framerate))
-    w = signal.chirp(t, f0=p.f0, f1=p.f1, t1=p.trial_time, method='linear')
+    w = signal.chirp(t, f0=p.f0, f1=p.f1, t1=p.trial_time, phi=90, method=p.method)
 
     ###### Initiate Stimulus ########
     frame_counter = 0
@@ -45,10 +46,10 @@ def temporal_chirp(win, exp_handler, p: TemporalChirpParams, dlp=None, code_on=b
 
     for rep in range(p.repeats):
         # show inverval frames, i.e. blank image
+        if dlp is not None:
+            dlp.write(code_off)
         for i in range(interval_frames):
             frame_counter += 1
-            if dlp is not None:
-                dlp.write(code_off)
             win.color = [0, 0, 0]
             win.flip()
 
@@ -56,6 +57,7 @@ def temporal_chirp(win, exp_handler, p: TemporalChirpParams, dlp=None, code_on=b
         if dlp is not None:
             dlp.write(code_on)
         for v in w:
+            frame_counter += 1
             win.color = [v, v, v]
             win.flip()
 
