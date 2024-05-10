@@ -12,11 +12,12 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec7"
-    logdir = r"D:\experiments\20240508"
+    exp_name = "squid1_rec8"
+    logdir = r"D:\experiments\20240510"
     p = TemporalChirpParams(
         f0=0.5,
         f1=10,
+        method="logarithmic",
         repeats=50,
         trial_time=8,
         interval_time=5

@@ -12,18 +12,18 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    com_port = "COM3" # for DLP-IO8-G
-    exp_name = "test1"
-    logdir = r"D:\experiments\20230922_squid_48dph_cal520_LSN_DRG"
+    exp_name = "squid1_rec7"
+    logdir = r"D:\experiments\20240510"
     p = DriftingGratingsParams(
         # SFs=[0.01, 0.025, 0.05],
-        SFs=[0.01, 0.025,],
+        SFs=[0.015, 0.03],
         TFs=[0, 1.5, 3.0],
         ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
         repeats=15, # number of repeats
-        trial_time=2.0, # seconds
-        interval_time=1.0 # seconds
+        trial_time=1.5, # seconds
+        interval_time=0.0 # seconds
     )
+    com_port = "COM3" # for DLP-IO8-G
     ###### PARAMETERS END ######
 
     # initialize DLP-IO8-G
@@ -43,7 +43,7 @@ if __name__ == "__main__":
                                         saveWideText=True,
                                         savePickle=False)
 
-    win = visual.Window(monitor='projector', size=[1280,720],
+    win = visual.Window(monitor='DLP3010EVM-LC', size=[1280,720],
                         fullscr=True, screen=1,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
@@ -57,15 +57,18 @@ if __name__ == "__main__":
         if keys:
             break
 
-    time.sleep(1.0) # wait 1 sec before proceeding
+    time.sleep(5.0) # wait 1 sec before proceeding
     # start session; generate TTL pulses from channel 1
     drifting_gratings(win, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 
-    exp_handler.close()
-    win.close()
+    # wait 5 sec after the session is over
+    time.sleep(5)
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')
-    time.sleep(0.5)
+    time.sleep(0.1)
     dlp.write(b'E')
     dlp.close()
+
+    exp_handler.close()
+    win.close()
