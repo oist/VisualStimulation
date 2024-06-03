@@ -12,8 +12,8 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec8"
-    logdir = r"D:\experiments\20240510"
+    exp_name = "squid1_rec7"
+    logdir = r"D:\experiments\20240603"
     p = TemporalChirpParams(
         f0=0.5,
         f1=10,
@@ -43,7 +43,7 @@ if __name__ == "__main__":
                                         savePickle=False)
 
     win = visual.Window(monitor='DLP3010EVM-LC', size=[1280,720],
-                        fullscr=True, screen=1,
+                        fullscr=True, screen=0,
                         units='pix', color=[0,0,0], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
@@ -59,13 +59,14 @@ if __name__ == "__main__":
     time.sleep(5.0) # wait 5 sec before proceeding
     # start session; generate TTL pulses from channel 1
     temporal_chirp(win, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
-    time.sleep(3.0) # wait 3 sec before proceeding
 
-    exp_handler.close()
-    win.close()
+    time.sleep(10.0) # wait 10 sec after the session is over
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')
-    time.sleep(0.5)
+    time.sleep(0.1)
     dlp.write(b'E')
     dlp.close()
+
+    exp_handler.close()
+    win.close()

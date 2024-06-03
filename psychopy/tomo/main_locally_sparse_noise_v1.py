@@ -12,10 +12,10 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec6"
-    logdir = r"D:\experiments\20240510"
+    exp_name = "squid1_rec9"
+    logdir = r"D:\experiments\20240603"
     p = LocallySparseNoiseParams(
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240409_LSN_matrix\LSN_4DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240603_LSN_matrix\LSN_5d0DEG.npy",
         stim_time=1,
         stim_mode="on_only"
     )
@@ -40,11 +40,8 @@ if __name__ == "__main__":
                                         savePickle=False)
 
     win = visual.Window(monitor='DLP3010EVM-LC', size=[1280,720],
-                        fullscr=True, screen=1,
+                        fullscr=True, screen=0,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
-#    win = visual.Window(monitor='DLP3010EVM-LC', size=[640,360], pos=(640,300),
-#                        fullscr=False, screen=1,
-#                        units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
@@ -56,12 +53,11 @@ if __name__ == "__main__":
         if keys:
             break
 
-    time.sleep(5.0) # wait 1 sec before proceeding
+    time.sleep(5.0) # wait 5 sec before proceeding
     # start session; generate TTL pulses from channel 1
     locally_sparse_noise(win, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 
-    # wait 5 sec after the session is over
-    time.sleep(5)
+    time.sleep(10.0) # wait 10 sec after the session is over
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')
