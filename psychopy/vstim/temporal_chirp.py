@@ -43,22 +43,27 @@ def temporal_chirp(win, exp_handler, p: TemporalChirpParams, dlp=None, code_on=b
     ###### Initiate Stimulus ########
     frame_counter = 0
     stop_loop=False
+    if dlp is not None:
+        dlp.write(code_off)
 
     for rep in range(p.repeats):
+        exp_handler.addData('frame', frame_counter)
+        exp_handler.addData('index', rep)
+        exp_handler.nextEntry()
+
+        # temporal chirp starts
+        if dlp is not None:
+            dlp.write(code_on)
+        for v in enumerate(w):
+            frame_counter += 1
+            win.color = [v, v, v]
+            win.flip()
         # show inverval frames, i.e. blank image
         if dlp is not None:
             dlp.write(code_off)
         for i in range(interval_frames):
             frame_counter += 1
             win.color = [0, 0, 0]
-            win.flip()
-
-        # temporal chirp starts
-        if dlp is not None:
-            dlp.write(code_on)
-        for v in w:
-            frame_counter += 1
-            win.color = [v, v, v]
             win.flip()
 
         keys = event.getKeys()
