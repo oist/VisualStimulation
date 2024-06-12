@@ -56,14 +56,13 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
         for cond in conditions:
             grat.sf = cond[0]
             grat.ori = cond[2]
-            # if temporal frequency is 0, randomize phase
             if cond[1] == 0:
-                phase = np.random.uniform(0.0, 1.0)
+                phase = np.random.uniform(0.0, 1.0) # if temporal frequency is 0, randomize phase
+            exp_handler.addData('frame', frame_counter)
             exp_handler.addData('SF', cond[0])
             exp_handler.addData('TF', cond[1])
             exp_handler.addData('Ori', cond[2])
-            exp_handler.addData('frame', frame_counter)
-            print('Ori=', cond[2], ', SF=', cond[0], ', TF=', cond[1])
+            exp_handler.nextEntry()
 
             # show trial frame, i.e. drifting gratings
             phase_clock.reset()
@@ -97,7 +96,6 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
                 stop_loop=True
                 break
             event.clearEvents()
-            exp_handler.nextEntry()
         if stop_loop==True:
             break
     if save_movie:
