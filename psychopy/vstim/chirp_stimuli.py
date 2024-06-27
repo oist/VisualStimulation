@@ -6,17 +6,22 @@ from dataclasses import dataclass, field
 from typing import List
 
 @dataclass
-class TemporalChirpParams:
+class ChirpParams:
     f0: float = 0.5 # Frequency in Hz at time t=0.
     f1: float = 10 # Frequency in Hz at time t = end
     method: str = "linear" # Method of frequency modulation; "linear", "logarithmic", "hyperbolic", "quadratic"
     repeats: int = 10 # number of repeats
-    trial_time: float = 20 # The total length of the chirp stimulation
-    interval_time: float = 2 # Interval between repeats in seconds
+    t1: int = 2 # off
+    t2: int = 4 # on
+    t3: int = 4 # off
+    t4: int = 2 # gray
+    t5: int = 8 # temporal chirp
+    t6: int = 2 # gray
+    t7: int = 2 # off
     stim_size: List[int] = field(default_factory=lambda: [1280, 720])
     stim_pos: List[int] = field(default_factory=lambda: [0, 0])
 
-def temporal_chirp(win, exp_handler, p: TemporalChirpParams, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
+def chirp(win, exp_handler, p: ChirpParams, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
     """
     This function generates drifting gratings pattern on a screen.
 
@@ -37,48 +42,78 @@ def temporal_chirp(win, exp_handler, p: TemporalChirpParams, dlp=None, code_on=b
     """
 
     framerate = win.getActualFrameRate()
-    trial_frames = int(p.trial_time * framerate) # conver to secs to frames
-    interval_frames = int(p.trial_time * framerate) # conver to secs to frames
-
-    t = np.linspace(0, p.trial_time, int(p.trial_time*framerate))
-    w = signal.chirp(t, f0=p.f0, f1=p.f1, t1=p.trial_time, phi=90, method=p.method)
+    t = np.linspace(0, p.t5, int(p.t5*framerate))
+    w = signal.chirp(t, f0=p.f0, f1=p.f1, t1=p.t5, phi=90, method=p.method)
 
     ###### Initiate Stimulus ########
+    stim = visual.ImageStim(win, size=p.stim_size, pos=p.stim_pos)
     frame_counter = 0
-    stop_loop=False
+    stop_loop = False
     if dlp is not None:
         dlp.write(code_off)
-
-    stim = visual.ImageStim(win, size=p.stim_size, pos=p.stim_pos)
 
     for rep in range(p.repeats):
         exp_handler.addData('frame', frame_counter)
         exp_handler.addData('index', rep)
         exp_handler.nextEntry()
 
-        # temporal chirp starts
+        ### beginning of square pulse ###
+        for i in range(int(p.t1 * framerate)):
+            frame_counter += 1
+            image = (-1) * np.ones((2,2))
+            stim.setImage(image)
+            stim.draw()
+            win.flip()
+        if dlp is not None:
+            dlp.write(code_on)
+        for i in range(int(p.t2 * framerate)):
+            frame_counter += 1
+            image = np.ones((2,2))
+            stim.setImage(image)
+            stim.draw()
+            win.flip()
+        if dlp is not None:
+            dlp.write(code_off)
+        for i in range(int(p.t3 * framerate)):
+            frame_counter += 1
+            image = (-1) * np.ones((2,2))
+            stim.setImage(image)
+            stim.draw()
+            win.flip()
+
+        ### begining of temporal chirp ###
+        for i in range(int(p.t4 * framerate)):
+            frame_counter += 1
+            image = 0 * np.ones((2,2))
+            stim.setImage(image)
+            stim.draw()
+            win.flip()
         if dlp is not None:
             dlp.write(code_on)
         for v in w:
             frame_counter += 1
             image = v * np.ones((2,2))
+            stim = visual.ImageStim(win, image=image, size=p.stim_size, pos=p.stim_pos)
+            stim.draw()
+            win.flip()
+        if dlp is not None:
+            dlp.write(code_off)
+        for i in range(int(p.t6 * framerate)):
+            frame_counter += 1
+            image = 0 * np.ones((2,2))
             stim.setImage(image)
             stim.draw()
             win.flip()
-        # show inverval frames, i.e. blank image
-        if dlp is not None:
-            dlp.write(code_off)
-        for i in range(interval_frames):
+        for i in range(int(p.t7 * framerate)):
             frame_counter += 1
-            image = np.zeros((2,2))
+            image = (-1) * np.ones((2,2))
             stim.setImage(image)
             stim.draw()
             win.flip()
 
         keys = event.getKeys()
         if any(k in ['q','escape'] for k in keys):
-            stop_loop=True
+            stop_loop = True
         event.clearEvents()
-        exp_handler.nextEntry()
-        if stop_loop==True:
+        if stop_loop == True:
             break
