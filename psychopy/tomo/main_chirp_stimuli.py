@@ -12,28 +12,30 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec7"
-    logdir = r"C:\Users\tomoyuki\Documents\tmp"
+    exp_name = "test20240630"
+    logdir = r"D:\experiments\test"
     p = ChirpParams(
         f0=0.5,
         f1=10,
         method="logarithmic",
         repeats=50,
-        t1= 2,
-        t2 = 4,
-        t3 = 4,
-        t4 = 2,
-        t5 = 8,
-        t6 = 4,
-        t7 = 2,
-        stim_size=[640, 720],
-        stim_pos=[-320, 0]
+        t1=2,
+        t2=4,
+        t3=4,
+        t4=2,
+        t5=8,
+        t6=4,
+        t7=1,
+        stim_size=[1280, 720],
+        stim_pos=[0, 0]
+#        stim_size=[640, 720],
+#        stim_pos=[-320, 0]
     )
     com_port = "COM3" # for DLP-IO8-G
     ###### PARAMETERS END ######
 
     # initialize DLP-IO8-G
-    # dlp = Serial(port=com_port, baudrate=115200)
+    dlp = Serial(port=com_port, baudrate=115200)
 
     now = datetime.now()
     dt_string = now.strftime("%Y%m%d_%H%M%S")
@@ -54,26 +56,26 @@ if __name__ == "__main__":
                         units='pix', color=[0,0,0], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
-#    while True:
-#        dlp.write(b'S')  # request to read
-#        x = dlp.read(3).decode('utf-8')
-#        if x[0] == '1':
-#            break # the line is HIGH
-#        keys = event.getKeys()
-#        if keys:
-#            break
+    while True:
+        dlp.write(b'S')  # request to read
+        x = dlp.read(3).decode('utf-8')
+        if x[0] == '1':
+            break # the line is HIGH
+        keys = event.getKeys()
+        if keys:
+            break
 
-    time.sleep(0.1) # wait 5 sec before proceeding
+    time.sleep(5) # wait 5 sec before proceeding
     # start session; generate TTL pulses from channel 1
     chirp(win, exp_handler, p)
 
-    time.sleep(0.1) # wait 10 sec after the session is over
+    time.sleep(10) # wait 10 sec after the session is over
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
-#    dlp.write(b'3')
-#    time.sleep(0.1)
-#    dlp.write(b'E')
-#    dlp.close()
+    dlp.write(b'3')
+    time.sleep(0.1)
+    dlp.write(b'E')
+    dlp.close()
 
     exp_handler.close()
     win.close()

@@ -12,15 +12,21 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec6"
-    logdir = r"D:\experiments\20240603"
+    exp_name = "test20240630-1"
+    logdir = r"D:\experiments\test"
     p = DriftingGratingsParams(
-        SFs=[0.015],
-        TFs=[0, 3.0, 5.0],
+        SFs=[0.015, 0.03],
+        TFs=[3.0, 6.0],
         ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
-        repeats=18, # number of repeats
-        trial_time=1.5, # seconds
-        interval_time=0.0 # seconds
+        texture='sqr',
+        repeats=15,
+        t1=1.0,
+        t2=1.5,
+        t3=0.0,
+        stim_size=[2000, 2000],
+        stim_pos=[0, 0]
+        # stim_size=[640, 720],
+        # stim_pos=[-320, 0]
     )
     com_port = "COM3" # for DLP-IO8-G
     ###### PARAMETERS END ######
@@ -43,7 +49,7 @@ if __name__ == "__main__":
                                         savePickle=False)
 
     win = visual.Window(monitor='DLP3010EVM-LC', size=[1280,720],
-                        fullscr=True, screen=0,
+                        fullscr=True, screen=1,
                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in DLP-IO8G (channel 2) or keyboard input
