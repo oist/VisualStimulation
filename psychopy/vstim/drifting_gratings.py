@@ -14,7 +14,6 @@ class DriftingGratingsParams:
     t1: int = 1 # static grating period
     t2: int = 1.5 # drifting grating period
     t3: int = 0 # blank image
-    random_seed: int = 2024
     stim_size: List[int] = field(default_factory=lambda: [1280, 720])
     stim_pos: List[int] = field(default_factory=lambda: [0, 0])
 
@@ -46,7 +45,6 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
     phase_clock.reset()
     frame_counter = 0
     stop_loop = False
-    np.random.seed(p.random_seed)
     if dlp is not None:
         dlp.write(code_off)
 
