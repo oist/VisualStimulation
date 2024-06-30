@@ -14,16 +14,16 @@ if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
     exp_name = "squid1_rec4"
-    logdir = r"D:\experiments\20240612"
+    logdir = r"D:\experiments\20240620"
     com_port = "COM3" # for DLP-IO8-G
-    num_cycles = 2
+    num_cycles = 3
     p1 = LocallySparseNoiseParams(
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240611_LSN_matrix\LSN_5d0DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240613_LSN_matrix\LSN_5d0DEG.npy",
         stim_time=1.0,
         stim_mode="on_only"
     )
     p2 = LocallySparseNoiseParams(
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240611_LSN_matrix\LSN_5d0DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240613_LSN_matrix\LSN_5d0DEG.npy",
         stim_time=1.0,
         stim_mode="off_only"
     )
@@ -31,15 +31,19 @@ if __name__ == "__main__":
         SFs=[0.015],
         TFs=[0, 3.0, 5.0],
         ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
-        repeats=10, # number of repeats
-        trial_time=1.5, # seconds
-        interval_time=0.0 # seconds
+        texture='sqr',
+        repeats=15,
+        t1=1.0,
+        t2=1.5,
+        t3=0.0,
+        stim_size=[2000, 2000],
+        stim_pos=[0, 0]
     )
     p4 = TemporalChirpParams(
         f0=0.5,
         f1=10,
         method="logarithmic",
-        repeats=25,
+        repeats=15,
         trial_time=8,
         interval_time=5
     )
