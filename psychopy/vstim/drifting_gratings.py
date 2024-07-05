@@ -14,6 +14,7 @@ class DriftingGratingsParams:
     t1: int = 1 # static grating period
     t2: int = 1.5 # drifting grating period
     t3: int = 0 # blank image
+    mask: str = None # ‘circle’, ‘sin’, ‘sqr’, ‘saw’, ‘tri’
     stim_size: List[int] = field(default_factory=lambda: [1280, 720])
     stim_pos: List[int] = field(default_factory=lambda: [0, 0])
 
@@ -40,7 +41,7 @@ def drifting_gratings(win, exp_handler, p: DriftingGratingsParams, dlp=None, cod
     framerate = win.getActualFrameRate()
 
     ###### Initiate Stimulus ########
-    grat = visual.GratingStim(win=win, tex=p.texture, units='pix', pos=p.stim_pos, size=p.stim_size)
+    grat = visual.GratingStim(win=win, tex=p.texture, units='pix', mask=p.mask, pos=p.stim_pos, size=p.stim_size)
     phase_clock = core.Clock()
     phase_clock.reset()
     frame_counter = 0
