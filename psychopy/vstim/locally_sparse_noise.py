@@ -9,6 +9,8 @@ class LocallySparseNoiseParams:
     npy_filepath: str # path to the pre-computed LSN matrix
     stim_time: float = 1.0 # Length of each stimulation in seconds
     stim_mode: str = "on_only" # "on_off", "on_only", "off_only"
+    mat_start: int = None # first frame of the LSN matrix
+    mat_end: int = None # last frame of the LSN matrix
     stim_size: List[int] = field(default_factory=lambda: [1280, 720])
     stim_pos: List[int] = field(default_factory=lambda: [0, 0])
 
@@ -36,15 +38,20 @@ def locally_sparse_noise(win, exp_handler, p: LocallySparseNoiseParams, dlp=None
     stim_frames = int(p.stim_time * framerate) # conver from secs to frames
 
     mat = np.load(p.npy_filepath)
+    if p.mat_start is None:
+        p.mat_start = 0
+    if p.mat_end is None:
+        p.mat_end = mat.shape[0]
 
     # initiate stimulus
+    stim = visual.ImageStim(win, size=p.stim_size, pos=p.stim_pos, anchor='center')
     frame_counter = 0
     stop_loop=False
 
     if dlp is not None:
         dlp.write(code_off)
 
-    for i in range(mat.shape[0]):
+    for i in range(p.mat_start, p.mat_end):
         if i%10 == 0:
             print(f"{i}/{mat.shape[0]}")
         exp_handler.addData('frame', frame_counter)
@@ -58,7 +65,8 @@ def locally_sparse_noise(win, exp_handler, p: LocallySparseNoiseParams, dlp=None
             image = (-1)*np.ones_like(image) + 2 * (image != 0)
         elif p.stim_mode == "off_only":
             image = (1)*np.ones_like(image) - 2 * (image != 0)
-        stim = visual.ImageStim(win, image=image, size=p.stim_size, pos=p.stim_pos)
+        #stim = visual.ImageStim(win, image=image, size=p.stim_size, pos=p.stim_pos)
+        stim.setImage(image)
         for j in range(stim_frames):
             frame_counter += 1
             if dlp is not None:
