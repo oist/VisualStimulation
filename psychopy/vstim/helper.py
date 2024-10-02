@@ -25,7 +25,9 @@ def reset_screen(win, start_color, end_color, ramp_time, hold_time):
         win.color = end_color
         win.flip()
 
-def reset_screen2(win, start_color, end_color, ramp_time, hold_time, stim_size=[1280, 720], stim_pos=[0,0]):
+def reset_screen2(win, start_color, end_color, ramp_time, hold_time, stim_size=None, stim_pos=[0,0]):
+    if stim_size is None:
+        stim_size = win.size
     start_color = np.array(start_color)
     end_color = np.array(end_color)
     framerate = win.getActualFrameRate()
