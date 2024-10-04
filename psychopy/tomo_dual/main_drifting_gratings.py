@@ -5,8 +5,7 @@ from serial import Serial
 
 import sys
 sys.path.append("..")
-from vstim_dual import dual_locally_sparse_noise, DualLocallySparseNoiseParams
-from vstim import reset_screen2
+from vstim_dual import dual_drifting_gratings, DualDriftingGratingsParams
 
 if __name__ == "__main__":
     """
@@ -15,20 +14,23 @@ if __name__ == "__main__":
     ###### PARAMETERS BEGIN ######
     exp_name = "test"
     logdir = r"D:\experiments\20241003"
-    p = DualLocallySparseNoiseParams(
+    p = DualDriftingGratingsParams(
         mode="pol_only",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240611_LSN_matrix\LSN_5d0DEG.npy",
-        stim_time=1.0,
-        binary=True,
-        # mat_start=0,
-        # mat_end=30,
-        lum_stim_size=[1280, 720],
-        lum_stim_pos=[0, 0], # center position of the luminance stimuli
+        # SFs=[0.015, 0.03, 0.045],
+        SFs=[0.03, 0.06, 0.09],
+        TFs=[3.0, 5.0, 8.0],
+        ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
+        texture='sqr',
+        repeats=10,
+        t1=1.0,
+        t2=1.5,
+        t3=1.0,
+        lum_stim_size=[2500, 2500],
+        lum_stim_pos=[0, 0],
         lum_stim_value=1,
         lum_background_value=0,
-        pol_stim_size=[647, 368], # size of the polarization stimuli
-        # pol_stim_pos=[-40, 130], # center position of the polarization stimuli; landscape mode
-        pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
+        pol_stim_size=[2500, 2500],
+        pol_stim_pos=[0, 0],
         pol_stim_value=0.718,
         pol_background_value=-1
     )
@@ -53,7 +55,7 @@ if __name__ == "__main__":
                                         savePickle=False)
 
     win_lum = visual.Window(monitor='test', size=[1280,720], screen=2,
-                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=False)
     win_pol = visual.Window(monitor='test', size=[647, 368], pos=[70, 325], screen=1,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=False)
 
@@ -69,7 +71,8 @@ if __name__ == "__main__":
 
     time.sleep(1.0) # wait 5 sec before proceeding
     # start session; generate TTL pulses from channel 1
-    dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
+    dual_drifting_gratings(win_lum, win_pol, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
+
 
     time.sleep(1.0) # wait 10 sec after the session is over
 

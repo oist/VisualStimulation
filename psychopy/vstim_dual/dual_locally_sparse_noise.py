@@ -59,10 +59,20 @@ def dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p: DualLocallySpars
         stim = visual.ImageStim(win_lum, size=p.lum_stim_size, pos=p.lum_stim_pos, anchor='center')
         f = p.lum_stim_value
         b = p.lum_background_value
+        # background on polarization screen
+        rect = visual.rect.Rect(win=win_pol, pos=p.pol_stim_pos, size=p.pol_stim_size,
+                                fillColor=[p.pol_background_value, p.pol_background_value, p.pol_background_value])
+        rect.draw()
+        win_pol.flip()
     elif p.mode == "pol_only":
         stim = visual.ImageStim(win_pol, size=p.pol_stim_size, pos=p.pol_stim_pos, anchor='center')
         f = p.pol_stim_value
         b = p.pol_background_value
+        # background on luminance screen
+        rect = visual.rect.Rect(win=win_lum, pos=p.lum_stim_pos, size=p.lum_stim_size,
+                                fillColor=[p.lum_background_value, p.lum_background_value, p.lum_background_value])
+        rect.draw()
+        win_lum.flip()
     frame_counter = 0
     stop_loop=False
 
@@ -96,12 +106,8 @@ def dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p: DualLocallySpars
                     dlp.write(code_off)
             stim.draw()
             if p.mode == "lum_only":
-                win_pol.color = [p.pol_background_value, p.pol_background_value, p.pol_background_value]
-                win_pol.flip()
                 win_lum.flip()
             elif p.mode == "pol_only":
-                win_lum.color = [p.lum_background_value, p.lum_background_value, p.lum_background_value]
-                win_lum.flip()
                 win_pol.flip()
 
         keys = event.getKeys()
