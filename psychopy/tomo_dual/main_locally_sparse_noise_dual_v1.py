@@ -27,7 +27,6 @@ if __name__ == "__main__":
         lum_stim_value=1,
         lum_background_value=0,
         pol_stim_size=[647, 368], # size of the polarization stimuli
-        # pol_stim_pos=[-40, 130], # center position of the polarization stimuli; landscape mode
         pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
         pol_stim_value=0.718,
         pol_background_value=-1

@@ -13,13 +13,13 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec9"
-    logdir = r"D:\experiments\20241002"
+    exp_name = "test"
+    logdir = r"D:\experiments\20241003"
     com_port = "COM3" # for DLP-IO8-G
     p1 = DualLocallySparseNoiseParams(
         mode="lum_only",
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240801_LSN_matrix\LSN_4DEG.npy",
-        stim_time=0.5,
+        stim_time=1.0,
         binary=True,
         mat_start=0,
         mat_end=500,
@@ -27,15 +27,15 @@ if __name__ == "__main__":
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
         lum_stim_value=1,
         lum_background_value=-1,
-        pol_stim_size=[587, 338], # size of the polarization stimuli
-        pol_stim_pos=[-5, 110], # center position of the polarization stimuli
-        pol_stim_value=-1,
+        pol_stim_size=[647, 368], # size of the polarization stimuli
+        pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
+        pol_stim_value=(220-128)/128,
         pol_background_value=(220-128)/128
     )
     p2 = DualLocallySparseNoiseParams(
         mode="lum_only",
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240801_LSN_matrix\LSN_4DEG.npy",
-        stim_time=0.5,
+        stim_time=1.0,
         binary=True,
         mat_start=0,
         mat_end=500,
@@ -43,8 +43,8 @@ if __name__ == "__main__":
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
         lum_stim_value=1,
         lum_background_value=-1,
-        pol_stim_size=[587, 338], # size of the polarization stimuli
-        pol_stim_pos=[-5, 110], # center position of the polarization stimuli
+        pol_stim_size=[647, 368], # size of the polarization stimuli
+        pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
         pol_stim_value=-1,
         pol_background_value=-1
     )
@@ -57,10 +57,10 @@ if __name__ == "__main__":
         mat_end=500,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
-        lum_stim_value=1,
+        lum_stim_value=0,
         lum_background_value=0,
-        pol_stim_size=[587, 338], # size of the polarization stimuli
-        pol_stim_pos=[-5, 110], # center position of the polarization stimuli
+        pol_stim_size=[647, 368], # size of the polarization stimuli
+        pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
         pol_stim_value=-1,
         pol_background_value=(220-128)/128
     )
@@ -73,10 +73,10 @@ if __name__ == "__main__":
         mat_end=500,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
-        lum_stim_value=1,
+        lum_stim_value=0,
         lum_background_value=0,
-        pol_stim_size=[587, 338], # size of the polarization stimuli
-        pol_stim_pos=[-5, 110], # center position of the polarization stimuli
+        pol_stim_size=[647, 368], # size of the polarization stimuli
+        pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
         pol_stim_value=(220-128)/128,
         pol_background_value=-1
     )
@@ -101,8 +101,8 @@ if __name__ == "__main__":
 
     win_lum = visual.Window(monitor='test', size=[1280,720], screen=2,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
-    win_pol = visual.Window(monitor='test', size=[1024,768], screen=1,
-                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+    win_pol = visual.Window(monitor='test', size=[647, 368], pos=[70, 325], screen=1,
+                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=False)
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
