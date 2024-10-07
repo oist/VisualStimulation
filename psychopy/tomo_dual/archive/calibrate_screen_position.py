@@ -8,7 +8,7 @@ if __name__ == "__main__":
     ###### PARAMETERS BEGIN ######
     increment = 5
     stim_pos = [-5, 110]
-    stim_size = [587, 338]
+    stim_size = [647, 368]
     ###### PARAMETERS END ########
 
     win_lum = visual.Window(monitor='test', size=[1280,720],

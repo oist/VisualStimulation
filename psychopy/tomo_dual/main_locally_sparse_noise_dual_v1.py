@@ -13,8 +13,8 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "test"
-    logdir = r"D:\experiments\20241003"
+    exp_name = "rec15"
+    logdir = r"D:\experiments\20241004"
     p = DualLocallySparseNoiseParams(
         mode="pol_only",
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240611_LSN_matrix\LSN_5d0DEG.npy",
@@ -24,12 +24,12 @@ if __name__ == "__main__":
         # mat_end=30,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
-        lum_stim_value=1,
+        lum_stim_value=0,
         lum_background_value=0,
         pol_stim_size=[647, 368], # size of the polarization stimuli
         pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
-        pol_stim_value=0.718,
-        pol_background_value=-1
+        pol_stim_value=-1,
+        pol_background_value=0.783
     )
     com_port = "COM3" # for DLP-IO8-G
     ###### PARAMETERS END ######
@@ -66,11 +66,11 @@ if __name__ == "__main__":
         if keys:
             break
 
-    time.sleep(1.0) # wait 5 sec before proceeding
+    time.sleep(5.0) # wait 5 sec before proceeding
     # start session; generate TTL pulses from channel 1
     dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 
-    time.sleep(1.0) # wait 10 sec after the session is over
+    time.sleep(10.0) # wait 10 sec after the session is over
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')

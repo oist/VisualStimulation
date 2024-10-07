@@ -13,8 +13,8 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "test"
-    logdir = r"D:\experiments\20241003"
+    exp_name = "rec16"
+    logdir = r"D:\experiments\20241004"
     com_port = "COM3" # for DLP-IO8-G
     p1 = DualLocallySparseNoiseParams(
         mode="lum_only",
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         stim_time=1.0,
         binary=True,
         mat_start=0,
-        mat_end=500,
+        mat_end=1,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
         lum_stim_value=0,
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         stim_time=1.0,
         binary=True,
         mat_start=0,
-        mat_end=500,
+        mat_end=1,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
         lum_stim_value=0,

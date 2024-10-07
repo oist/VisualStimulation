@@ -12,19 +12,19 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "test"
-    logdir = r"D:\experiments\20241003"
+    exp_name = "rec14"
+    logdir = r"D:\experiments\20241004"
     p = DualDriftingGratingsParams(
         mode="pol_only",
         # SFs=[0.015, 0.03, 0.045],
-        SFs=[0.03, 0.06, 0.09],
-        TFs=[3.0, 5.0, 8.0],
+        SFs=[0.015, 0.03],
+        TFs=[3.0, 5.0],
         ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
         texture='sqr',
-        repeats=10,
+        repeats=15,
         t1=1.0,
         t2=1.5,
-        t3=1.0,
+        t3=0.0,
         lum_stim_size=[2500, 2500],
         lum_stim_pos=[0, 0],
         lum_stim_value=1,
@@ -69,12 +69,12 @@ if __name__ == "__main__":
         if keys:
             break
 
-    time.sleep(1.0) # wait 5 sec before proceeding
+    time.sleep(5.0) # wait 5 sec before proceeding
     # start session; generate TTL pulses from channel 1
     dual_drifting_gratings(win_lum, win_pol, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 
 
-    time.sleep(1.0) # wait 10 sec after the session is over
+    time.sleep(10.0) # wait 10 sec after the session is over
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')
