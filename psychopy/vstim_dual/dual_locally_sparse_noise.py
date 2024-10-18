@@ -31,8 +31,6 @@ def dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p: DualLocallySpars
         Window must be set up by the parent python code and passed to this function.
     win_pol: psychopy.visual.Window object
         Window must be set up by the parent python code and passed to this function.
-    mode: str
-        "pol_only" or "lum_only"
     exp_handler: psychopy.data.ExperimentHandler
         ExperimentHandler object must be set up by the parent python code and passed to this function.
     p:

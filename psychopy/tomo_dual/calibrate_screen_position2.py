@@ -7,7 +7,7 @@ if __name__ == "__main__":
     """
     ###### PARAMETERS BEGIN ######
     increment = 2
-    win_pos = [70, 325]
+    win_pos = [68, 331]
     win_size = [647, 368]
     ###### PARAMETERS END ########
 
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     # draw white full screen rectangle on lum screen
     rect = visual.rect.Rect(win=win_lum, pos=[0,0], size=[1280, 720], fillColor=[1,1,1])
     rect.draw()
-    rect2 = visual.rect.Rect(win=win_pol, size=[600, 700], fillColor=[1,1,1])
+    rect2 = visual.rect.Rect(win=win_pol, size=[2000, 2000], fillColor=[1,1,1])
     rect2.draw()
     win_lum.flip()
     win_pol.flip()
