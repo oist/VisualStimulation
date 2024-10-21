@@ -20,6 +20,9 @@ class DualLocallySparseNoiseParams:
     pol_stim_pos: List[int] = field(default_factory=lambda: [0, 0]) # center position of the polarization stimuli
     pol_stim_value: float = 1 # in range [0, 1]
     pol_background_value: float = 0
+    pol_flip_horiz: bool = False
+    pol_flip_vert: bool = False
+
 
 def dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p: DualLocallySparseNoiseParams, dlp=None, code_on=b'1', code_off=b'Q'):
     """
@@ -63,7 +66,8 @@ def dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p: DualLocallySpars
         rect.draw()
         win_pol.flip()
     elif p.mode == "pol_only":
-        stim = visual.ImageStim(win_pol, size=p.pol_stim_size, pos=p.pol_stim_pos, anchor='center')
+        stim = visual.ImageStim(win_pol, size=p.pol_stim_size, pos=p.pol_stim_pos, anchor='center',
+                                flipHoriz=p.pol_flip_horiz, flipVert=p.pol_flip_vert)
         f = p.pol_stim_value
         b = p.pol_background_value
         # background on luminance screen
