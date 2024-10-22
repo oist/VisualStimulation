@@ -13,72 +13,88 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "rec16"
-    logdir = r"D:\experiments\20241004"
+    exp_name = "test"
+    logdir = r"D:\experiments\20241022"
     com_port = "COM3" # for DLP-IO8-G
+    # luminance LSN, unpolarized background
     p1 = DualLocallySparseNoiseParams(
         mode="lum_only",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240801_LSN_matrix\LSN_4DEG.npy",
+        # npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        mat_start=0,
-        mat_end=500,
+        # mat_start=0,
+        # mat_end=500,
         lum_stim_size=[1280, 720],
-        lum_stim_pos=[0, 0], # center position of the luminance stimuli
+        lum_stim_pos=[0, 0],
         lum_stim_value=1,
         lum_background_value=-1,
-        pol_stim_size=[647, 368], # size of the polarization stimuli
-        pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
+        pol_stim_size=[657, 364],
+        pol_stim_pos=[0, 0],
         pol_stim_value=(220-128)/128,
-        pol_background_value=(220-128)/128
+        pol_background_value=(220-128)/128,
+        pol_flip_horiz=True,
+        pol_flip_vert=False,
     )
+    # luminance LSN, polarized background
     p2 = DualLocallySparseNoiseParams(
         mode="lum_only",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240801_LSN_matrix\LSN_4DEG.npy",
+        # npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        mat_start=0,
-        mat_end=500,
+        # mat_start=0,
+        # mat_end=500,
         lum_stim_size=[1280, 720],
-        lum_stim_pos=[0, 0], # center position of the luminance stimuli
+        lum_stim_pos=[0, 0],
         lum_stim_value=1,
         lum_background_value=-1,
-        pol_stim_size=[647, 368], # size of the polarization stimuli
-        pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
-        pol_stim_value=-1,
-        pol_background_value=-1
+        pol_stim_size=[657, 364],
+        pol_stim_pos=[0, 0],
+        pol_stim_value=1,
+        pol_background_value=-1,
+        pol_flip_horiz=True,
+        pol_flip_vert=False,
     )
+    # constant luminance, polarized square appearing on unpolarized background
     p3 = DualLocallySparseNoiseParams(
         mode="pol_only",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240801_LSN_matrix\LSN_4DEG.npy",
+        #npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        mat_start=0,
-        mat_end=1,
+        # mat_start=0,
+        # mat_end=500,
         lum_stim_size=[1280, 720],
-        lum_stim_pos=[0, 0], # center position of the luminance stimuli
+        lum_stim_pos=[0, 0],
         lum_stim_value=0,
         lum_background_value=0,
-        pol_stim_size=[647, 368], # size of the polarization stimuli
-        pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
+        pol_stim_size=[657, 364],
+        pol_stim_pos=[0, 0],
         pol_stim_value=-1,
-        pol_background_value=(220-128)/128
+        pol_background_value=(220-128)/128,
+        pol_flip_horiz=True,
+        pol_flip_vert=False,
     )
+    # constant luminance, unpolarized square appearing on polarized background
     p4 = DualLocallySparseNoiseParams(
         mode="pol_only",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240801_LSN_matrix\LSN_4DEG.npy",
+        # npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        mat_start=0,
-        mat_end=1,
+        # mat_start=0,
+        # mat_end=500,
         lum_stim_size=[1280, 720],
-        lum_stim_pos=[0, 0], # center position of the luminance stimuli
+        lum_stim_pos=[0, 0],
         lum_stim_value=0,
         lum_background_value=0,
-        pol_stim_size=[647, 368], # size of the polarization stimuli
-        pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
+        pol_stim_size=[657, 364],
+        pol_stim_pos=[0, 0],
         pol_stim_value=(220-128)/128,
-        pol_background_value=-1
+        pol_background_value=-1,
+        pol_flip_horiz=True,
+        pol_flip_vert=False,
     )
     ###### PARAMETERS END ######
 
@@ -101,8 +117,12 @@ if __name__ == "__main__":
 
     win_lum = visual.Window(monitor='test', size=[1280,720], screen=2,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
-    win_pol = visual.Window(monitor='test', size=[647, 368], pos=[70, 325], screen=1,
-                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=False)
+    # portrait mode
+    win_pol = visual.Window(monitor='test', size=[657, 364], pos=[78, 328], screen=1,
+                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+    # landscape mode
+    # win_pol = visual.Window(monitor='test', size=[657, 364], pos=[127, 68], screen=1,
+    #                     units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:

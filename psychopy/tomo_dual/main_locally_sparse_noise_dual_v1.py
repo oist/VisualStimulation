@@ -13,10 +13,10 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "rec15"
-    logdir = r"D:\experiments\20241004"
+    exp_name = "rec1"
+    logdir = r"D:\experiments\20241022"
     p = DualLocallySparseNoiseParams(
-        mode="pol_only",
+        mode="lum_only",
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240611_LSN_matrix\LSN_5d0DEG.npy",
         stim_time=1.0,
         binary=True,
@@ -24,12 +24,14 @@ if __name__ == "__main__":
         # mat_end=30,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
-        lum_stim_value=0,
-        lum_background_value=0,
-        pol_stim_size=[647, 368], # size of the polarization stimuli
+        lum_stim_value=1,
+        lum_background_value=-1,
+        pol_stim_size=[657, 364], # size of the polarization stimuli
         pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
-        pol_stim_value=-1,
-        pol_background_value=0.783
+        pol_stim_value=0.788,
+        pol_background_value=0.788,
+        pol_flip_horiz=True,
+        pol_flip_vert=False,
     )
     com_port = "COM3" # for DLP-IO8-G
     ###### PARAMETERS END ######
@@ -53,7 +55,7 @@ if __name__ == "__main__":
 
     win_lum = visual.Window(monitor='test', size=[1280,720], screen=2,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
-    win_pol = visual.Window(monitor='test', size=[647, 368], pos=[70, 325], screen=1,
+    win_pol = visual.Window(monitor='test', size=[657, 364], pos=[127, 68], screen=1,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=False)
 
     # wait for TTL HIGH in channel 2 or keyboard input
