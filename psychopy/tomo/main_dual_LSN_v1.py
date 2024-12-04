@@ -12,11 +12,11 @@ if __name__ == "__main__":
     Main function to generate locally sparse noise (LSN) stimulus.
     """
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec4"
+    exp_name = "test"
     mode = "lum_only" # choices are ["lum_only", "pol_only"]
-    logdir = r"D:\experiments\20231012"
+    logdir = r"D:\experiments\20240410"
     p = LocallySparseNoiseParams(
-        npy_filepath="LSN/EVM3010_6cm_4DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240409_LSN_matrix\LSN_4DEG.npy",
         stim_time=1.0
     )
     com_port = "COM3" # for DLP-IO8-G
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     log_filename =  os.path.join(logdir, f"log_{exp_name}_{dt_string}.csv")
     # this is to log all events
     log_file = logging.LogFile(log_filename_raw, level=logging.EXP)
-    # this is to log important events
+    # this is to log important events                 
     exp_handler = data.ExperimentHandler(name=exp_name, version='',
                                         extraInfo={},
                                         runtimeInfo=None,
@@ -39,12 +39,12 @@ if __name__ == "__main__":
                                         saveWideText=True,
                                         savePickle=False)
 
-    win_lum = visual.Window(monitor='projector', size=[1280,720],
-                            fullscr=True, screen=2,
-                            units='pix', color=[-1,-1,-1], allowGUI=True, waitBlanking=True)
-    win_pol = visual.Window(monitor='test', size=[1280,800],
+    win_lum = visual.Window(monitor='projector', winType="pyglet", size=[1280,720],
                             fullscr=True, screen=1,
-                            units='pix', color=[-1,-1,-1], allowGUI=True, waitBlanking=True)
+                            units='pix', color=[1,1,1], allowGUI=False, waitBlanking=True)
+    win_pol = visual.Window(monitor='LCD', winType="pyglet", size=[1280,800],
+                            fullscr=True, screen=2,
+                            units='pix', color=[1,1,1], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         if keys:
             break
 
-    time.sleep(1.0) # wait 1 sec before proceeding
+    time.sleep(10.0) # wait 1 sec before proceeding
     # start session; generate TTL pulses from channel 1
     if mode == "lum_only":
         LSN_luminance(win_lum, win_pol, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')

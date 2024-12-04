@@ -26,10 +26,10 @@ if __name__ == "__main__":
         t5=8,
         t6=4,
         t7=1,
-        stim_size=[1280, 720],
-        stim_pos=[0, 0]
-#        stim_size=[640, 720],
-#        stim_pos=[-320, 0]
+        stim_size=[100, 100],
+        stim_pos=[166, -240]
+        # stim_size=[640, 720],
+        # stim_pos=[-320, 0]
     )
     com_port = "COM3" # for DLP-IO8-G
     ###### PARAMETERS END ######
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     time.sleep(5) # wait 5 sec before proceeding
     # start session; generate TTL pulses from channel 1
-    chirp(win, exp_handler, p)
+    chirp(win, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 
     time.sleep(10) # wait 10 sec after the session is over
 

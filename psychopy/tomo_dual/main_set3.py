@@ -13,9 +13,9 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "rec12"
-    logdir = r"D:\experiments\20241018"
-    repeats=20
+    exp_name = "test"
+    logdir = r"D:\experiments\20241022"
+    repeats = 18
     # p1: luminance chirp on unpolarized background
     p1 = DualChirpParamsV1(
         mode="lum_only",
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
         lum_stim_value=1,
         lum_background_value=-1,
-        pol_stim_size=[655, 368], # size of the polarization stimuli
+        pol_stim_size=[657, 364], # size of the polarization stimuli
         pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
         pol_stim_value=0.783,
         pol_background_value=0.783
@@ -65,7 +65,7 @@ if __name__ == "__main__":
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
         lum_stim_value=1,
         lum_background_value=-1,
-        pol_stim_size=[655, 368], # size of the polarization stimuli
+        pol_stim_size=[657, 364], # size of the polarization stimuli
         pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
         pol_stim_value=0.783,
         pol_background_value=-1
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         c1=1.0,
         f=1.0,
         repeats=1,
-        t1=2,
+        t1=4,
         t2=4,
         t3=4,
         t4=2,
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         lum_stim_pos=[0, 0], # center position of the luminance stimuli
         lum_stim_value=1,
         lum_background_value=1,
-        pol_stim_size=[655, 368], # size of the polarization stimuli
+        pol_stim_size=[657, 364], # size of the polarization stimuli
         pol_stim_pos=[0, 0], # center position of the polarization stimuli; portrait mode
         pol_stim_value=0.783,
         pol_background_value=-1
@@ -119,8 +119,12 @@ if __name__ == "__main__":
 
     win_lum = visual.Window(monitor='test', size=[1280,720], screen=2,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
-    win_pol = visual.Window(monitor='test', size=[655, 368], pos=[83, 321], screen=1,
+    # portrait mode
+    win_pol = visual.Window(monitor='test', size=[657, 364], pos=[78, 328], screen=1,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+    # landscape mode
+    # win_pol = visual.Window(monitor='test', size=[657, 364], pos=[127, 68], screen=1,
+    #                     units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
@@ -135,9 +139,12 @@ if __name__ == "__main__":
     # black -> black
     reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=3, hold_time=2)
     for rep in range(repeats):
-        dual_chirp_v1(win_lum, win_pol, exp_handler, p1, dlp=dlp, code_on=b'1', code_off=b'Q')
-        dual_chirp_v1(win_lum, win_pol, exp_handler, p2, dlp=dlp, code_on=b'1', code_off=b'Q')
-        dual_chirp_v1(win_lum, win_pol, exp_handler, p3, dlp=dlp, code_on=b'1', code_off=b'Q')
+        stop_loop = dual_chirp_v1(win_lum, win_pol, exp_handler, p1, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
+        stop_loop = dual_chirp_v1(win_lum, win_pol, exp_handler, p2, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
+        stop_loop = dual_chirp_v1(win_lum, win_pol, exp_handler, p3, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
 
     # black -> black
     reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=5, hold_time=5)

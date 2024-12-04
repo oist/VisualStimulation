@@ -13,10 +13,10 @@ from vstim import reset_screen
 if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec4"
-    logdir = r"D:\experiments\20240620"
+    exp_name = "squid1_rec9"
+    logdir = r"D:\experiments\20240704"
     com_port = "COM3" # for DLP-IO8-G
-    num_cycles = 3
+    num_cycles = 2
     p1 = LocallySparseNoiseParams(
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240613_LSN_matrix\LSN_5d0DEG.npy",
         stim_time=1.0,
@@ -28,11 +28,11 @@ if __name__ == "__main__":
         stim_mode="off_only"
     )
     p3 = DriftingGratingsParams(
-        SFs=[0.015],
-        TFs=[0, 3.0, 5.0],
+        SFs=[0.015, 0.03],
+        TFs=[3.0, 5.0],
         ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
         texture='sqr',
-        repeats=15,
+        repeats=8,
         t1=1.0,
         t2=1.5,
         t3=0.0,

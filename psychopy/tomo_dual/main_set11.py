@@ -6,6 +6,7 @@ from serial import Serial
 import sys
 sys.path.append("..")
 from vstim_dual import dual_drifting_gratings, DualDriftingGratingsParams
+from vstim import reset_screen3
 
 if __name__ == "__main__":
     """
@@ -62,6 +63,11 @@ if __name__ == "__main__":
     # win_pol = visual.Window(monitor='test', size=[657, 364], pos=[127, 68], screen=1,
     #                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
+    fr = min(win_lum.getActualFrameRate(), win_pol.getActualFrameRate())
+    s1 = win_lum.size
+    s2 = win_pol.size
+    print(fr, s1, s2)
+
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
         dlp.write(b'S')  # request to read
@@ -72,11 +78,12 @@ if __name__ == "__main__":
         if keys:
             break
 
-    time.sleep(5.0) # wait 5 sec before proceeding
+    # black -> gray
+    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[0, 0, 0], ramp_time=3, hold_time=2, framerate=fr, stim_size=s1)
     # start session; generate TTL pulses from channel 1
-    dual_drifting_gratings(win_lum, win_pol, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
-
-    time.sleep(10.0) # wait 10 sec after the session is over
+    dual_drifting_gratings(win_lum, win_pol, exp_handler, p, framerate=fr, dlp=dlp, code_on=b'1', code_off=b'Q')
+    # gray -> black
+    reset_screen3(win_lum, start_color=[0,0,0], end_color=[-1,-1,-1], ramp_time=5, hold_time=5, framerate=fr, stim_size=s1)
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')

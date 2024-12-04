@@ -19,12 +19,9 @@ if __name__ == "__main__":
     # luminance LSN, unpolarized background
     p1 = DualLocallySparseNoiseParams(
         mode="lum_only",
-        # npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241024_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        # mat_start=0,
-        # mat_end=500,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0],
         lum_stim_value=1,
@@ -39,12 +36,9 @@ if __name__ == "__main__":
     # luminance LSN, polarized background
     p2 = DualLocallySparseNoiseParams(
         mode="lum_only",
-        # npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241024_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        # mat_start=0,
-        # mat_end=500,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0],
         lum_stim_value=1,

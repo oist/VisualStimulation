@@ -23,6 +23,7 @@ class DualChirpParamsV1:
     t6: int = 2 # gray
     t7: int = 8 # contrast chirp
     t8: int = 2 # off
+    skip_contrast_chirp: bool = False
     lum_stim_size: List[int] = field(default_factory=lambda: [1280, 720]) # size of the luminance stimuli
     lum_stim_pos: List[int] = field(default_factory=lambda: [0, 0]) # center position of the luminance stimuli
     lum_stim_value: float = 1 # in range [0, 1]
@@ -32,7 +33,7 @@ class DualChirpParamsV1:
     pol_stim_value: float = 1 # in range [0, 1]
     pol_background_value: float = 0
 
-def dual_chirp_v1(win_lum, win_pol, exp_handler, p: DualChirpParamsV1, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
+def dual_chirp_v1(win_lum, win_pol, exp_handler, p: DualChirpParamsV1, framerate=60, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
     """
     This function generates drifting gratings pattern on a screen.
 
@@ -53,9 +54,6 @@ def dual_chirp_v1(win_lum, win_pol, exp_handler, p: DualChirpParamsV1, dlp=None,
     code_off: str
         Byte code to switch to LOW
     """
-
-    framerate = min(win_lum.getActualFrameRate(), win_pol.getActualFrameRate())
-
     ###### Initiate Stimulus ########
     if p.mode == "lum_only":
         stim = visual.ImageStim(win_lum, size=p.lum_stim_size, pos=p.lum_stim_pos, anchor='center')
@@ -80,7 +78,7 @@ def dual_chirp_v1(win_lum, win_pol, exp_handler, p: DualChirpParamsV1, dlp=None,
 
     t1 = np.linspace(0, p.t5, int(p.t5*framerate))
     w1 = signal.chirp(t1, f0=p.f0, f1=p.f1, t1=p.t5, phi=90, method=p.method)
-    w1 = (w1 - m) * (f - b) / 2
+    w1 = w1 * (f - b) / 2 + m
     t2 = np.linspace(0, p.t7, int(p.t7*framerate))
     a = p.c0 * (1 - t2/t2[-1]) + p.c1 * t2 / t2[-1]
     w2 = a * np.sin(p.f * t2 * 2 * np.pi)
@@ -167,19 +165,20 @@ def dual_chirp_v1(win_lum, win_pol, exp_handler, p: DualChirpParamsV1, dlp=None,
                 win_lum.flip()
             elif p.mode == "pol_only":
                 win_pol.flip()
-        if dlp is not None:
-            dlp.write(code_on)
-        for v in w2:
-            frame_counter += 1
-            image = v * np.ones((2,2))
-            stim.setImage(image)
-            stim.draw()
-            if p.mode == "lum_only":
-                win_lum.flip()
-            elif p.mode == "pol_only":
-                win_pol.flip()
-        if dlp is not None:
-            dlp.write(code_off)
+        if not p.skip_contrast_chirp:
+            if dlp is not None:
+                dlp.write(code_on)
+            for v in w2:
+                frame_counter += 1
+                image = v * np.ones((2,2))
+                stim.setImage(image)
+                stim.draw()
+                if p.mode == "lum_only":
+                    win_lum.flip()
+                elif p.mode == "pol_only":
+                    win_pol.flip()
+            if dlp is not None:
+                dlp.write(code_off)
         for i in range(int(p.t8 * framerate)):
             # OFF state
             frame_counter += 1
@@ -193,7 +192,9 @@ def dual_chirp_v1(win_lum, win_pol, exp_handler, p: DualChirpParamsV1, dlp=None,
 
         keys = event.getKeys()
         if any(k in ['q','escape'] for k in keys):
+            # event.clearEvents()
             stop_loop = True
-        event.clearEvents()
         if stop_loop == True:
             break
+    
+    return stop_loop

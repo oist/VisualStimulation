@@ -12,16 +12,16 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "test"
-    logdir = r"D:\experiments\20240704"
+    exp_name = "squid1_rec3"
+    logdir = r"D:\experiments\20240903"
     p = LocallySparseNoiseParams(
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240611_LSN_matrix\LSN_5d0DEG.npy",
         stim_time=1.0,
         stim_mode="on_only",
-        mat_start=5,
-        mat_end=12,
-        stim_size=[320, 320],
-        stim_pos = [361.6, -78.3]
+        # mat_start=0,
+        # mat_end=30,
+        # stim_size=[320, 320],
+        # stim_pos = [361.6, -78.3]
     )
     com_port = "COM3" # for DLP-IO8-G
     ###### PARAMETERS END ######

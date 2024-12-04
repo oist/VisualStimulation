@@ -47,3 +47,25 @@ def reset_screen2(win, start_color, end_color, ramp_time, hold_time, stim_size=N
         stim.setImage(image)
         stim.draw()
         win.flip()
+
+
+def reset_screen3(win, start_color, end_color, ramp_time, hold_time, stim_size=None, stim_pos=[0,0], framerate=60):
+    if stim_size is None:
+        stim_size = win.size
+    start_color = np.array(start_color)
+    end_color = np.array(end_color)
+    ramp_frames = int(ramp_time * framerate) # convert secs to frames
+    hold_frames = int(hold_time * framerate) # convert secs to frames
+
+    for i in range(ramp_frames):
+        c = start_color * (ramp_frames - i) / ramp_frames + end_color * i / ramp_frames
+        c = c.clip(-1,1).astype("float")
+        rect = visual.rect.Rect(win=win, size=stim_size, pos=stim_pos,
+                                fillColor=c)
+        rect.draw()
+        win.flip()
+    for i in range(hold_frames):
+        rect = visual.rect.Rect(win=win, size=stim_size, pos=stim_pos,
+                                fillColor=end_color)
+        rect.draw()
+        win.flip()

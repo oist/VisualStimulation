@@ -7,8 +7,8 @@ if __name__ == "__main__":
     """
     ###### PARAMETERS BEGIN ######
     increment = 2
-    win_pos = [68, 331]
-    win_size = [647, 368]
+    win_pos = [127, 68]
+    win_size = [657, 364]
     ###### PARAMETERS END ########
 
     win_lum = visual.Window(monitor='test', size=[1280,720],

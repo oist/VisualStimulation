@@ -13,7 +13,7 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "rec6"
+    exp_name = "test"
     logdir = r"D:\experiments\20241022"
     repeats = 18
     # p1: luminance chirp on unpolarized background
@@ -112,8 +112,10 @@ if __name__ == "__main__":
     # black -> black
     reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=3, hold_time=2)
     for rep in range(repeats):
-        dual_chirp_v1(win_lum, win_pol, exp_handler, p1, dlp=dlp, code_on=b'1', code_off=b'Q')
-        dual_chirp_v1(win_lum, win_pol, exp_handler, p2, dlp=dlp, code_on=b'1', code_off=b'Q')
+        stop_loop = dual_chirp_v1(win_lum, win_pol, exp_handler, p1, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
+        stop_loop = dual_chirp_v1(win_lum, win_pol, exp_handler, p2, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
 
     # black -> black
     reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=5, hold_time=5)

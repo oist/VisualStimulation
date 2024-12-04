@@ -24,7 +24,7 @@ class DualLocallySparseNoiseParams:
     pol_flip_vert: bool = False
 
 
-def dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p: DualLocallySparseNoiseParams, dlp=None, code_on=b'1', code_off=b'Q'):
+def dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p: DualLocallySparseNoiseParams, framerate=60, dlp=None, code_on=b'1', code_off=b'Q'):
     """
     This function generates locally sparse noise (LSN) stimulus.
 
@@ -45,8 +45,6 @@ def dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p: DualLocallySpars
     code_off: str
         Byte code to switch to LOW
     """
-
-    framerate = min(win_lum.getActualFrameRate(), win_pol.getActualFrameRate())
     stim_frames = int(p.stim_time * framerate) # conver from secs to frames
 
     mat = np.load(p.npy_filepath)
@@ -118,3 +116,5 @@ def dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p: DualLocallySpars
         event.clearEvents()
         if stop_loop == True:
             break
+
+    return stop_loop

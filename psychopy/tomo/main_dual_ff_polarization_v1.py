@@ -5,7 +5,7 @@ from serial import Serial
 
 import sys
 sys.path.append("..")
-from vstim_dual_screen import FF_polarization, FullFieldPolarizationParams
+from vstim_dual import FF_polarization, FF_polarization2, FullFieldPolarizationParams
 
 if __name__ == "__main__":
     """
@@ -18,11 +18,11 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec5"
-    logdir = r"D:\experiments\20231012"
+    exp_name = "squid1_rec4"
+    logdir = r"D:\experiments\20231225"
     p = FullFieldPolarizationParams(
         on_time=1.0,
-        off_time=3.0,
+        off_time=4.0, 
         ORIs=[0,10,20,30,40,50,60,70,80,90],
         repeats=20
     )
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     now = datetime.now()
     dt_string = now.strftime("%Y%m%d_%H%M%S")
     log_filename_raw = os.path.join(logdir, f"log_{exp_name}_{dt_string}_raw.log")
-    log_filename =  os.path.join(logdir, f"log_{exp_name}_{dt_string}.csv")
+    log_filename =  os.path.join(logdir, f"log_{exp_name}_{dt_string}")
     # this is to log all events
     log_file = logging.LogFile(log_filename_raw, level=logging.EXP)
     # this is to log important events
@@ -47,10 +47,10 @@ if __name__ == "__main__":
                                         savePickle=False)
 
     win_lum = visual.Window(monitor='projector', size=[1280,720],
-                            fullscr=True, screen=2,
+                            fullscr=True, screen=1,
                             units='pix', color=[-1,-1,-1], allowGUI=True, waitBlanking=True)
     win_pol = visual.Window(monitor='test', size=[1280,800],
-                            fullscr=True, screen=1,
+                            fullscr=True, screen=2,
                             units='pix', color=[-1,-1,-1], allowGUI=True, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
@@ -65,7 +65,8 @@ if __name__ == "__main__":
     
     time.sleep(1.0) # wait 1 sec before proceeding
     # start flashing; generate TTL pulses from channel 1
-    FF_polarization(win_lum, win_pol, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
+    # FF_polarization(win_lum, win_pol, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
+    FF_polarization2(win_lum, win_pol, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
 
     exp_handler.close()
     win_lum.close()

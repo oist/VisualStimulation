@@ -14,17 +14,14 @@ if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
     exp_name = "test"
-    logdir = r"D:\experiments\20241022"
+    logdir = r"D:\experiments\20241024"
     com_port = "COM3" # for DLP-IO8-G
     # luminance LSN, unpolarized background
     p1 = DualLocallySparseNoiseParams(
         mode="lum_only",
-        # npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241024_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        # mat_start=0,
-        # mat_end=500,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0],
         lum_stim_value=1,
@@ -39,12 +36,9 @@ if __name__ == "__main__":
     # luminance LSN, polarized background
     p2 = DualLocallySparseNoiseParams(
         mode="lum_only",
-        # npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241024_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        # mat_start=0,
-        # mat_end=500,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0],
         lum_stim_value=1,
@@ -59,16 +53,13 @@ if __name__ == "__main__":
     # constant luminance, polarized square appearing on unpolarized background
     p3 = DualLocallySparseNoiseParams(
         mode="pol_only",
-        #npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241024_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        # mat_start=0,
-        # mat_end=500,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0],
-        lum_stim_value=0,
-        lum_background_value=0,
+        lum_stim_value=1,
+        lum_background_value=1,
         pol_stim_size=[657, 364],
         pol_stim_pos=[0, 0],
         pol_stim_value=-1,
@@ -79,16 +70,13 @@ if __name__ == "__main__":
     # constant luminance, unpolarized square appearing on polarized background
     p4 = DualLocallySparseNoiseParams(
         mode="pol_only",
-        # npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241024_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
         binary=True,
-        # mat_start=0,
-        # mat_end=500,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0],
-        lum_stim_value=0,
-        lum_background_value=0,
+        lum_stim_value=1,
+        lum_background_value=1,
         pol_stim_size=[657, 364],
         pol_stim_pos=[0, 0],
         pol_stim_value=(220-128)/128,
@@ -142,16 +130,16 @@ if __name__ == "__main__":
     reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=3, hold_time=2)
     dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p2, dlp=dlp, code_on=b'1', code_off=b'Q')
 
-    # black -> gray
-    reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[0,0,0], ramp_time=3, hold_time=2)
+    # black -> white
+    reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[1,1,1], ramp_time=3, hold_time=2)
     dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p3, dlp=dlp, code_on=b'1', code_off=b'Q')
 
-    # gray -> gray
-    reset_screen2(win_lum, start_color=[0,0,0], end_color=[0,0,0], ramp_time=3, hold_time=2)
+    # white -> white
+    reset_screen2(win_lum, start_color=[1,1,1], end_color=[1,1,1], ramp_time=3, hold_time=2)
     dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p4, dlp=dlp, code_on=b'1', code_off=b'Q')
 
-    # gray -> black
-    reset_screen2(win_lum, start_color=[0,0,0], end_color=[-1,-1,-1], ramp_time=5, hold_time=5)
+    # white -> black
+    reset_screen2(win_lum, start_color=[1,1,1], end_color=[-1,-1,-1], ramp_time=5, hold_time=5)
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')

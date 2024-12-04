@@ -20,20 +20,20 @@ if __name__ == "__main__":
     stim_size=[320, 320]
     stim_pos = [267, -172]
     p1 = LocallySparseNoiseParams(
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240701_LSN_matrix\LSN_SQUARE_2d0DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240717_LSN_matrix\LSN_SQUARE_4d0DEG.npy",
         stim_time=2.0,
         stim_mode="on_only",
         mat_start=0,
-        mat_end=388,
+        mat_end=370,
         stim_size=stim_size,
         stim_pos=stim_pos,
     )
     p2 = LocallySparseNoiseParams(
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240701_LSN_matrix\LSN_SQUARE_2d0DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240717_LSN_matrix\LSN_SQUARE_4d0DEG.npy",
         stim_time=2.0,
         stim_mode="off_only",
         mat_start=0,
-        mat_end=388,
+        mat_end=370,
         stim_size=stim_size,
         stim_pos=stim_pos,
     )

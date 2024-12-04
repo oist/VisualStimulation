@@ -25,7 +25,7 @@ class DualDriftingGratingsParams:
     pol_stim_value: float = 1 # in range [0, 1]
     pol_background_value: float = 0
 
-def dual_drifting_gratings(win_lum, win_pol, exp_handler, p: DualDriftingGratingsParams, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
+def dual_drifting_gratings(win_lum, win_pol, exp_handler, p: DualDriftingGratingsParams, framerate=60, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
     """
     This function generates drifting gratings pattern on a screen.
 
@@ -44,9 +44,6 @@ def dual_drifting_gratings(win_lum, win_pol, exp_handler, p: DualDriftingGrating
     code_off: str
         Byte code to switch to LOW
     """
-
-    framerate = min(win_lum.getActualFrameRate(), win_pol.getActualFrameRate())
-
     ###### Initiate Stimulus ########
     if p.mode == "lum_only":
         grat = visual.GratingStim(win=win_lum, tex=p.texture, units='pix', color=[p.lum_stim_value, p.lum_stim_value, p.lum_stim_value],

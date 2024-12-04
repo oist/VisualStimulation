@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
     exp_name = "rec1"
-    logdir = r"D:\experiments\20241022"
+    logdir = r"D:\experiments\20241030"
     p = DualLocallySparseNoiseParams(
         mode="lum_only",
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20240611_LSN_matrix\LSN_5d0DEG.npy",
@@ -55,8 +55,12 @@ if __name__ == "__main__":
 
     win_lum = visual.Window(monitor='test', size=[1280,720], screen=2,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
-    win_pol = visual.Window(monitor='test', size=[657, 364], pos=[127, 68], screen=1,
-                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=False)
+    # portrait mode
+    win_pol = visual.Window(monitor='test', size=[657, 364], pos=[78, 328], screen=1,
+                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+    # landscape mode
+    # win_pol = visual.Window(monitor='test', size=[657, 364], pos=[127, 68], screen=1,
+    #                     units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:

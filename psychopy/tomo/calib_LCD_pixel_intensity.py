@@ -20,8 +20,10 @@ if __name__ == "__main__":
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
     # initialize matrix shown on the screens
-    image_lum = np.zeros(win_lum.size)
-    image_pol = np.zeros(win_pol.size)
+#    image_lum = np.zeros(win_lum.size)
+#    image_pol = np.zeros(win_pol.size)
+    image_lum = np.zeros((3,) + win_lum.size)
+    image_pol = np.zeros((3,) + win_pol.size)
 
     for i in range(0, 255, increment):
         print("LCD pixel value:", i)

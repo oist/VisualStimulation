@@ -6,7 +6,7 @@ from serial import Serial
 import sys
 sys.path.append("..")
 from vstim_dual import dual_locally_sparse_noise, DualLocallySparseNoiseParams
-from vstim import reset_screen2
+from vstim import reset_screen3
 
 if __name__ == "__main__":
     """
@@ -17,17 +17,16 @@ if __name__ == "__main__":
     logdir = r"D:\experiments\20241022"
     com_port = "COM3" # for DLP-IO8-G
     # luminance LSN, unpolarized background, 2 degree
+    repeats = 2
     p1 = DualLocallySparseNoiseParams(
         mode="lum_only",
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_2DEG.npy",
         stim_time=1.0,
-        binary=True,
-        # mat_start=0,
-        # mat_end=500,
+        binary=False,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0],
         lum_stim_value=1,
-        lum_background_value=-1,
+        lum_background_value=0,
         pol_stim_size=[657, 364],
         pol_stim_pos=[0, 0],
         pol_stim_value=(220-128)/128,
@@ -40,13 +39,11 @@ if __name__ == "__main__":
         mode="lum_only",
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
         stim_time=1.0,
-        binary=True,
-        # mat_start=0,
-        # mat_end=500,
+        binary=False,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0],
         lum_stim_value=1,
-        lum_background_value=-1,
+        lum_background_value=0,
         pol_stim_size=[657, 364],
         pol_stim_pos=[0, 0],
         pol_stim_value=(220-128)/128,
@@ -59,13 +56,11 @@ if __name__ == "__main__":
         mode="lum_only",
         npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_8DEG.npy",
         stim_time=1.0,
-        binary=True,
-        # mat_start=0,
-        # mat_end=500,
+        binary=False,
         lum_stim_size=[1280, 720],
         lum_stim_pos=[0, 0],
         lum_stim_value=1,
-        lum_background_value=-1,
+        lum_background_value=0,
         pol_stim_size=[657, 364],
         pol_stim_pos=[0, 0],
         pol_stim_value=(220-128)/128,
@@ -95,11 +90,16 @@ if __name__ == "__main__":
     win_lum = visual.Window(monitor='test', size=[1280,720], screen=2,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
     # portrait mode
-    # win_pol = visual.Window(monitor='test', size=[657, 364], pos=[78, 328], screen=1,
-    #                         units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+    win_pol = visual.Window(monitor='test', size=[657, 364], pos=[78, 328], screen=1,
+                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
     # landscape mode
-    win_pol = visual.Window(monitor='test', size=[657, 364], pos=[127, 68], screen=1,
-                        units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+    # win_pol = visual.Window(monitor='test', size=[657, 364], pos=[127, 68], screen=1,
+    #                     units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+
+    fr = min(win_lum.getActualFrameRate(), win_pol.getActualFrameRate())
+    s1 = win_lum.size
+    s2 = win_pol.size
+    print(fr, s1, s2)
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
@@ -111,20 +111,23 @@ if __name__ == "__main__":
         if keys:
             break
     
-    # black -> black
-    reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=3, hold_time=2)
-    dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p1, dlp=dlp, code_on=b'1', code_off=b'Q')
-
-    # black -> black
-    reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=3, hold_time=2)
-    dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p2, dlp=dlp, code_on=b'1', code_off=b'Q')
-
-    # black -> black
-    reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=3, hold_time=2)
-    dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p3, dlp=dlp, code_on=b'1', code_off=b'Q')
-
-    # black -> black
-    reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=5, hold_time=5)
+    # black -> gray
+    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[0, 0, 0], ramp_time=3, hold_time=0, framerate=fr, stim_size=s1)
+    for rep in range(repeats):
+        # gray -> gray
+        reset_screen3(win_lum, start_color=[0,0,0], end_color=[0,0,0], ramp_time=3, hold_time=2, framerate=fr, stim_size=s1)
+        stop_loop = dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p1, framerate=fr, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
+        # gray -> gray
+        reset_screen3(win_lum, start_color=[0,0,0], end_color=[0, 0, 0], ramp_time=3, hold_time=2, framerate=fr, stim_size=s1)
+        stop_loop = dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p2, framerate=fr, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
+        # gray -> gray
+        reset_screen3(win_lum, start_color=[0,0,0], end_color=[0,0,0], ramp_time=3, hold_time=2, framerate=fr, stim_size=s1)
+        stop_loop = dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p3, framerate=fr, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
+    # gray -> black
+    reset_screen3(win_lum, start_color=[0,0,0], end_color=[-1,-1,-1], ramp_time=5, hold_time=5, framerate=fr, stim_size=s1)
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')

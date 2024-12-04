@@ -13,8 +13,8 @@ from vstim import reset_screen2
 if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec11"
-    logdir = r"D:\experiments\20240820"
+    exp_name = "squid1_rec7"
+    logdir = r"D:\experiments\20240903"
     com_port = "COM3" # for DLP-IO8-G
     num_cycles = 1
     # stim_size=[320, 320]
@@ -35,7 +35,7 @@ if __name__ == "__main__":
         TFs=[3.0, 5.0],
         ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
         texture='sqr',
-        repeats=15,
+        repeats=10,
         t1=1.0,
         t2=1.5,
         t3=0.0,
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         c0=0.05,
         c1=1.0,
         f=1.0,
-        repeats=15,
+        repeats=20,
         t1=2,
         t2=4,
         t3=4,
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         t5=8,
         t6=2,
         t7=8,
-        t8=1,
+        t8=2,
         stim_size=stim_size,
         stim_pos=stim_pos,
     )

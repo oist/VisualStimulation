@@ -12,15 +12,15 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "squid1_rec7"
-    logdir = r"D:\experiments\20240603"
+    exp_name = "squid1_rec18"
+    logdir = r"D:\experiments\20240607"
     p = TemporalChirpParams(
         f0=0.5,
         f1=10,
         method="logarithmic",
         repeats=50,
         trial_time=8,
-        interval_time=5
+        interval_time=6
     )
     com_port = "COM3" # for DLP-IO8-G
     ###### PARAMETERS END ######
@@ -43,7 +43,7 @@ if __name__ == "__main__":
                                         savePickle=False)
 
     win = visual.Window(monitor='DLP3010EVM-LC', size=[1280,720],
-                        fullscr=True, screen=0,
+                        fullscr=True, screen=1,
                         units='pix', color=[0,0,0], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
