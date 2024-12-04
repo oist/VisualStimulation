@@ -13,8 +13,8 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "rec11"
-    logdir = r"D:\experiments\20241022"
+    exp_name = "test"
+    logdir = r"D:\experiments\20241024"
     repeats = 18
     # p1: luminance chirp on unpolarized background
     p1 = DualChirpParamsV1(
@@ -44,7 +44,7 @@ if __name__ == "__main__":
         pol_stim_value=0.783,
         pol_background_value=0.783
     )
-    # p2: luminance chirp on vertically polarized background
+    # p2: luminance chirp on polarized background
     p2 = DualChirpParamsV1(
         mode="lum_only",
         f0=0.5,
@@ -137,14 +137,18 @@ if __name__ == "__main__":
             break # the line is HIGH
         keys = event.getKeys()
         if keys:
+            event.clearEvents()
             break
 
     # black -> black
     reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=3, hold_time=2)
     for rep in range(repeats):
-        dual_chirp_v1(win_lum, win_pol, exp_handler, p1, dlp=dlp, code_on=b'1', code_off=b'Q')
-        dual_chirp_v1(win_lum, win_pol, exp_handler, p2, dlp=dlp, code_on=b'1', code_off=b'Q')
-        dual_chirp_v1(win_lum, win_pol, exp_handler, p3, dlp=dlp, code_on=b'1', code_off=b'Q')
+        stop_loop = dual_chirp_v1(win_lum, win_pol, exp_handler, p1, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
+        stop_loop = dual_chirp_v1(win_lum, win_pol, exp_handler, p2, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
+        stop_loop = dual_chirp_v1(win_lum, win_pol, exp_handler, p3, dlp=dlp, code_on=b'1', code_off=b'Q')
+        if stop_loop: break
 
     # black -> black
     reset_screen2(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=5, hold_time=5)
