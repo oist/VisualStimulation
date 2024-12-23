@@ -120,10 +120,10 @@ if __name__ == "__main__":
                                         saveWideText=True,
                                         savePickle=False)
 
-    win_lum = visual.Window(monitor='test', size=[1280,720], screen=2,
+    win_lum = visual.Window(monitor='test', size=[1280,720], screen=2, fullscr=True,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
     # portrait mode
-    win_pol = visual.Window(monitor='test', size=[657, 364], pos=[78, 328], screen=1,
+    win_pol = visual.Window(monitor='test', size=[657, 364], pos=[78, 328], screen=1, fullscr=True,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
     # landscape mode
     # win_pol = visual.Window(monitor='test', size=[657, 364], pos=[127, 68], screen=1,

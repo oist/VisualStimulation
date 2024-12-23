@@ -2,10 +2,11 @@ from psychopy import visual, data, event, logging
 import os, time
 from datetime import datetime
 from serial import Serial
+import numpy as np
 
 import sys
 sys.path.append("..")
-from vstim_dual import noisy_lsn, NoisyLSNParams
+from vstim_dual import noisy_lsn, NoisyLSNParams, dual_locally_sparse_noise, DualLocallySparseNoiseParams
 from vstim import reset_screen3
 
 if __name__ == "__main__":
@@ -15,10 +16,11 @@ if __name__ == "__main__":
     exp_name = "test"
     logdir = r"D:\experiments\20241022"
     com_port = "COM3" # for DLP-IO8-G
-    # luminance LSN, unpolarized background, 2 degree
+    repeats = 1
+    switch_after = 30 # frames
     p1 = NoisyLSNParams(
         mode="pol_only",
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_2DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
         stim_time=1.0,
         noise_refresh_rate=0.1,
         binary=True,
@@ -29,8 +31,24 @@ if __name__ == "__main__":
         lum_background_value=-1,
         pol_stim_size=[657, 364],
         pol_stim_pos=[0, 0],
-        pol_stim_value=0.783,
-        pol_background_value=-1,
+        pol_stim_value=-1,
+        pol_background_value=0.783,
+        pol_flip_horiz=True,
+        pol_flip_vert=False,
+    )
+    p2 = DualLocallySparseNoiseParams(
+        mode="pol_only",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_4DEG.npy",
+        stim_time=1.0,
+        binary=True,
+        lum_stim_size=[1280, 720],
+        lum_stim_pos=[0, 0],
+        lum_stim_value=0,
+        lum_background_value=0,
+        pol_stim_size=[657, 364],
+        pol_stim_pos=[0, 0],
+        pol_stim_value=-1,
+        pol_background_value=0.783,
         pol_flip_horiz=True,
         pol_flip_vert=False,
     )
@@ -54,7 +72,7 @@ if __name__ == "__main__":
                                         savePickle=False)
 
     win_lum = visual.Window(monitor='test', size=[1280,720], screen=2, fullscr=True,
-                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=False)
+                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
     # portrait mode
     win_pol = visual.Window(monitor='test', size=[657, 364], pos=[78, 328], screen=1, fullscr=True,
                             units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
@@ -67,6 +85,9 @@ if __name__ == "__main__":
     s2 = win_pol.size
     print(fr, s1, s2)
 
+    mat = np.load(p1.npy_filepath)
+    num_frames = mat.shape[0]
+
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
         dlp.write(b'S')  # request to read
@@ -78,10 +99,20 @@ if __name__ == "__main__":
             break
     
     # black -> gray
-    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[0, 0, 0], ramp_time=1, hold_time=0, framerate=fr, stim_size=s1)
-    noisy_lsn(win_lum, win_pol, exp_handler, p1, framerate=fr, dlp=dlp, code_on=b'1', code_off=b'Q')
-    # gray -> black
-    reset_screen3(win_lum, start_color=[0,0,0], end_color=[-1,-1,-1], ramp_time=1, hold_time=0, framerate=fr, stim_size=s1)
+    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[0, 0, 0], ramp_time=3, hold_time=3, framerate=fr, stim_size=s1)
+    for rep in range(repeats):
+        for k in range(int(num_frames/switch_after)):
+            p1.mat_start, p1.mat_end = k * switch_after, (k+1) * switch_after
+            p2.mat_start, p2.mat_end = k * switch_after, (k+1) * switch_after
+            stop_loop = noisy_lsn(win_lum, win_pol, exp_handler, p1, framerate=fr, dlp=dlp, code_on=b'1', code_off=b'Q')
+            if stop_loop: break
+            # gray -> black
+            reset_screen3(win_lum, start_color=[0,0,0], end_color=[0,0,0], ramp_time=1, hold_time=1, framerate=fr, stim_size=s1)
+            stop_loop = dual_locally_sparse_noise(win_lum, win_pol, exp_handler, p2, framerate=fr, dlp=dlp, code_on=b'1', code_off=b'Q')
+            if stop_loop: break
+            reset_screen3(win_lum, start_color=[0,0,0], end_color=[0,0,0], ramp_time=1, hold_time=1, framerate=fr, stim_size=s1)
+        # gray -> black
+    reset_screen3(win_lum, start_color=[0,0,0], end_color=[-1, -1, -1], ramp_time=3, hold_time=3, framerate=fr, stim_size=s1)
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')

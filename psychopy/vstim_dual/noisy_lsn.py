@@ -7,6 +7,7 @@ from typing import List
 @dataclass
 class NoisyLSNParams:
     mode: str # "lum_only" or "pol_only"
+    npy_filepath: str # path to the pre-computed LSN matrix
     stim_time: float = 1.0 # Length of each stimulation in seconds
     noise_refresh_rate: float = 0.1 # refresh interval in seconds
     binary: bool = True
