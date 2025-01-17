@@ -5,8 +5,10 @@ from dataclasses import dataclass, field
 from typing import List
 
 @dataclass
-class DualDriftingGratingsParams:
+class DualDriftingGratingsParamsV2:
     mode: str # "lum_only" or "pol_only"
+    contrast: float = 1
+    color: float = 0
     SFs: list = field(default_factory=list) # spatial frequencies; given as cycles per pixel
     TFs: list = field(default_factory=list) # temporal frequencies; given in Hz
     ORIs: list = field(default_factory=list) # temporal frequencies
@@ -14,18 +16,16 @@ class DualDriftingGratingsParams:
     repeats: int = 5 # number of repeats
     t1: int = 1 # static grating period
     t2: int = 1.5 # drifting grating period
-    t3: int = 0 # blank image
+    t3: int = 1 # blank image
     mask: str = None # ‘circle’, ‘sin’, ‘sqr’, ‘saw’, ‘tri’
     lum_stim_size: List[int] = field(default_factory=lambda: [1280, 720]) # size of the luminance stimuli
     lum_stim_pos: List[int] = field(default_factory=lambda: [0, 0]) # center position of the luminance stimuli
-    lum_stim_value: float = 1 # in range [0, 1]
     lum_background_value: float = 0
     pol_stim_size: List[int] = field(default_factory=lambda: [1024, 768]) # size of the polarization stimuli
     pol_stim_pos: List[int] = field(default_factory=lambda: [0, 0]) # center position of the polarization stimuli
-    pol_stim_value: float = 1 # in range [0, 1]
     pol_background_value: float = 0
 
-def dual_drifting_gratings(win_lum, win_pol, exp_handler, p: DualDriftingGratingsParams, framerate=60, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
+def dual_drifting_gratings_v2(win_lum, win_pol, exp_handler, p: DualDriftingGratingsParamsV2, framerate=60, dlp=None, code_on=b'1', code_off=b'Q', save_movie=False):
     """
     This function generates drifting gratings pattern on a screen.
 
@@ -46,19 +46,24 @@ def dual_drifting_gratings(win_lum, win_pol, exp_handler, p: DualDriftingGrating
     """
     ###### Initiate Stimulus ########
     if p.mode == "lum_only":
-        grat = visual.GratingStim(win=win_lum, tex=p.texture, units='pix', color=[p.lum_stim_value, p.lum_stim_value, p.lum_stim_value],
+        grat = visual.GratingStim(win=win_lum, tex=p.texture, units='pix',
+                                  color=[p.color, p.color, p.color],
+                                  contrast=p.contrast,
                                   mask=p.mask, pos=p.lum_stim_pos, size=p.lum_stim_size)
         rect = visual.rect.Rect(win=win_pol, pos=p.pol_stim_pos, size=p.pol_stim_size,
                                 fillColor=[p.pol_background_value, p.pol_background_value, p.pol_background_value])
         rect.draw()
         win_pol.flip()
     elif p.mode == "pol_only":
-        grat = visual.GratingStim(win=win_pol, tex=p.texture, units='pix', color=[p.pol_stim_value, p.pol_stim_value, p.pol_stim_value],
+        grat = visual.GratingStim(win=win_pol, tex=p.texture, units='pix',
+                                  color=[p.color, p.color, p.color],
+                                  contrast=p.contrast,
                                   mask=p.mask, pos=p.pol_stim_pos, size=p.pol_stim_size)
         rect = visual.rect.Rect(win=win_lum, pos=p.lum_stim_pos, size=p.lum_stim_size,
                                 fillColor=[p.lum_background_value, p.lum_background_value, p.lum_background_value])
         rect.draw()
         win_lum.flip()
+    print(grat.fillColor, grat.lineColor, grat.foreColor, grat.backColor)
     phase_clock = core.Clock()
     phase_clock.reset()
     frame_counter = 0
@@ -86,8 +91,16 @@ def dual_drifting_gratings(win_lum, win_pol, exp_handler, p: DualDriftingGrating
             exp_handler.addData('phase', phase)
             exp_handler.nextEntry()
 
-            # show static gratings
+            # show inverval frames, i.e. blank image
             for i in range(int(p.t1 * framerate)):
+                frame_counter += 1
+                win_pol.color = [p.pol_background_value, p.pol_background_value, p.pol_background_value]
+                win_lum.color = [p.lum_background_value, p.lum_background_value, p.lum_background_value]
+                win_lum.flip()
+                win_pol.flip()
+
+            # show static gratings
+            for i in range(int(p.t2 * framerate)):
                 frame_counter += 1
                 grat.phase = phase
                 grat.draw()
@@ -97,13 +110,10 @@ def dual_drifting_gratings(win_lum, win_pol, exp_handler, p: DualDriftingGrating
                     win_pol.flip()
 
             # show drifting gratings
+            if dlp is not None:
+                dlp.write(code_on)
             phase_clock.reset()
-            for i in range(int(p.t2 * framerate)):
-                if dlp is not None:
-                    if i == 0:
-                        dlp.write(code_on)
-                    else:
-                        dlp.write(code_off)
+            for i in range(int(p.t3 * framerate)):
                 frame_counter += 1
                 grat.phase = phase + tf * phase_clock.getTime()
                 grat.draw()
@@ -111,14 +121,8 @@ def dual_drifting_gratings(win_lum, win_pol, exp_handler, p: DualDriftingGrating
                     win_lum.flip()
                 elif p.mode == "pol_only":
                     win_pol.flip()
-
-            # show inverval frames, i.e. blank image
-            for i in range(int(p.t3 * framerate)):
-                frame_counter += 1
-                win_pol.color = [p.pol_background_value, p.pol_background_value, p.pol_background_value]
-                win_lum.color = [p.lum_background_value, p.lum_background_value, p.lum_background_value]
-                win_lum.flip()
-                win_pol.flip()
+            if dlp is not None:
+                dlp.write(code_off)
 
             keys = event.getKeys()
             if any(k in ['q','escape'] for k in keys):
