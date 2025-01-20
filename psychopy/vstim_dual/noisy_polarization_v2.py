@@ -5,13 +5,14 @@ from dataclasses import dataclass, field
 from typing import List
 
 @dataclass
-class NoisyPolarizationParamsV1:
+class NoisyPolarizationParamsV2:
     mode: str # "lum_only" or "pol_only"
     contrast_steps: List[float] = field(default_factory=lambda: [-0.95, 0, 1.0])
     blank_background: float = -1
     repeats: int = 2 # number of repeats
-    t1: int = 3 # blank
-    t2: int = 2 # on
+    t1: float = 2 # blank
+    t2: float = 2 # on
+    t3: float = 2 # blank
     noise_refresh_rate: float = 0.1 # refresh interval in seconds
     noise_resolution: List[int] = field(default_factory=lambda: [1280, 720]) # Resolution of the noise grid
     lum_stim_size: List[int] = field(default_factory=lambda: [1280, 720]) # size of the luminance stimuli
@@ -25,7 +26,7 @@ class NoisyPolarizationParamsV1:
     pol_flip_horiz: bool = False
     pol_flip_vert: bool = False
 
-def noisy_polarization_v1(win_lum, win_pol, exp_handler, p: NoisyPolarizationParamsV1, framerate=60, dlp=None, code_on=b'1', code_off=b'Q'):
+def noisy_polarization_v2(win_lum, win_pol, exp_handler, p: NoisyPolarizationParamsV2, framerate=60, dlp=None, code_on=b'1', code_off=b'Q'):
     """
 
     Parameters
@@ -100,6 +101,18 @@ def noisy_polarization_v1(win_lum, win_pol, exp_handler, p: NoisyPolarizationPar
                 win_pol.flip()
             if dlp is not None:
                 dlp.write(code_off)
+            
+            # blank period
+            for i in range(int(p.t3 * framerate)):
+                frame_counter += 1
+                if i % noise_refresh_frames == 0:
+                    noise = np.random.uniform(noise_min, noise_max, p.noise_resolution)
+                    noise_texture.setImage(noise)
+                stim.color = [p.blank_background, p.blank_background, p.blank_background]
+                stim.draw()
+                noise_texture.draw()
+                win_lum.flip()
+                win_pol.flip()
 
             keys = event.getKeys()
             if any(k in ['q','escape'] for k in keys):
