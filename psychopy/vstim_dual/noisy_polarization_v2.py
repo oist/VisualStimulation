@@ -63,6 +63,10 @@ def noisy_polarization_v2(win_lum, win_pol, exp_handler, p: NoisyPolarizationPar
     if dlp is not None:
         dlp.write(code_off)
     
+    if p.noise_refresh_rate == 0:
+        noise = np.random.uniform(noise_min, noise_max, p.noise_resolution)
+        noise_texture.setImage(noise)
+
     for rep in range(p.repeats):
         np.random.shuffle(p.contrast_steps)
         for cont in p.contrast_steps:
@@ -72,14 +76,16 @@ def noisy_polarization_v2(win_lum, win_pol, exp_handler, p: NoisyPolarizationPar
             exp_handler.addData('lum_noise_max', p.lum_background_max)
             exp_handler.addData('pol_noise_min', p.pol_background_min)
             exp_handler.addData('pol_noise_max', p.pol_background_max)
+            exp_handler.addData('noise_refresh_rate', p.noise_refresh_rate)
             exp_handler.nextEntry()
 
             # blank period
             for i in range(int(p.t1 * framerate)):
                 frame_counter += 1
-                if i % noise_refresh_frames == 0:
-                    noise = np.random.uniform(noise_min, noise_max, p.noise_resolution)
-                    noise_texture.setImage(noise)
+                if p.noise_refresh_rate != 0:
+                    if i % noise_refresh_frames == 0:
+                        noise = np.random.uniform(noise_min, noise_max, p.noise_resolution)
+                        noise_texture.setImage(noise)
                 stim.color = [p.blank_background, p.blank_background, p.blank_background]
                 stim.draw()
                 noise_texture.draw()
@@ -91,9 +97,10 @@ def noisy_polarization_v2(win_lum, win_pol, exp_handler, p: NoisyPolarizationPar
             # ON state
             for i in range(int(p.t2 * framerate)):
                 frame_counter += 1
-                if i % noise_refresh_frames == 0:
-                    noise = np.random.uniform(noise_min, noise_max, p.noise_resolution)
-                    noise_texture.setImage(noise)
+                if p.noise_refresh_rate != 0:
+                    if i % noise_refresh_frames == 0:
+                        noise = np.random.uniform(noise_min, noise_max, p.noise_resolution)
+                        noise_texture.setImage(noise)
                 stim.color = [cont, cont, cont]
                 stim.draw()
                 noise_texture.draw()
@@ -105,9 +112,10 @@ def noisy_polarization_v2(win_lum, win_pol, exp_handler, p: NoisyPolarizationPar
             # blank period
             for i in range(int(p.t3 * framerate)):
                 frame_counter += 1
-                if i % noise_refresh_frames == 0:
-                    noise = np.random.uniform(noise_min, noise_max, p.noise_resolution)
-                    noise_texture.setImage(noise)
+                if p.noise_refresh_rate != 0:
+                    if i % noise_refresh_frames == 0:
+                        noise = np.random.uniform(noise_min, noise_max, p.noise_resolution)
+                        noise_texture.setImage(noise)
                 stim.color = [p.blank_background, p.blank_background, p.blank_background]
                 stim.draw()
                 noise_texture.draw()

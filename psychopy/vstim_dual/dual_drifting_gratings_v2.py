@@ -110,10 +110,13 @@ def dual_drifting_gratings_v2(win_lum, win_pol, exp_handler, p: DualDriftingGrat
                     win_pol.flip()
 
             # show drifting gratings
-            if dlp is not None:
-                dlp.write(code_on)
             phase_clock.reset()
             for i in range(int(p.t3 * framerate)):
+                if dlp is not None:
+                    if i == 0:
+                        dlp.write(code_on)
+                    else:
+                        dlp.write(code_off)
                 frame_counter += 1
                 grat.phase = phase + tf * phase_clock.getTime()
                 grat.draw()
@@ -121,8 +124,6 @@ def dual_drifting_gratings_v2(win_lum, win_pol, exp_handler, p: DualDriftingGrat
                     win_lum.flip()
                 elif p.mode == "pol_only":
                     win_pol.flip()
-            if dlp is not None:
-                dlp.write(code_off)
 
             keys = event.getKeys()
             if any(k in ['q','escape'] for k in keys):
