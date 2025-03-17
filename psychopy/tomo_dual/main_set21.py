@@ -13,15 +13,15 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "rec11"
-    logdir = r"D:\experiments\20250124"
+    exp_name = "rec5"
+    logdir = r"D:\experiments\20250317"
     repeats = 18
     p1 = DualDriftingGratingsParamsV3(
         mode="lum_only",
         color_max=1,
         color_min=-1,
         black_white_ratio=3,
-        SFs=[0.0085], # cycles per pixel; 1 pixel = 0.085 degree; sf = 0.017 means 5 degrees per cycle
+        SFs=[0.00425], # cycles per pixel; 1 pixel = 0.085 degree; sf = 0.017 means 5 degrees per cycle
         TFs=[3],
         ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
         repeats=1,
@@ -33,14 +33,14 @@ if __name__ == "__main__":
         lum_background_value=0,
         pol_stim_size=[2500, 2500],
         pol_stim_pos=[0, 0],
-        pol_background_value=0.74
+        pol_background_value=0.74,
     )
     p2 = DualDriftingGratingsParamsV3(
         mode="lum_only",
         color_max=1,
         color_min=-1,
         black_white_ratio=3,
-        SFs=[0.0085], # cycles per pixel; 1 pixel = 0.085 degree; sf = 0.017 means 5 degrees per cycle
+        SFs=[0.00425], # cycles per pixel; 1 pixel = 0.085 degree; sf = 0.017 means 5 degrees per cycle
         TFs=[3],
         ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
         repeats=1,
@@ -52,14 +52,14 @@ if __name__ == "__main__":
         lum_background_value=0,
         pol_stim_size=[2500, 2500],
         pol_stim_pos=[0, 0],
-        pol_background_value=-1
+        pol_background_value=-1,
     )
     p3 = DualDriftingGratingsParamsV3(
         mode="pol_only",
         color_max=0.74,
         color_min=-1,
         black_white_ratio=3,
-        SFs=[0.0085], # cycles per pixel; 1 pixel = 0.085 degree; sf = 0.017 means 5 degrees per cycle
+        SFs=[0.00425*1.94], # cycles per pixel; 1 pixel = 0.085 degree; sf = 0.017 means 5 degrees per cycle
         TFs=[3],
         ORIs=[0, 45, 90, 135, 180, 225, 270, 315],
         repeats=1,
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         lum_background_value=0,
         pol_stim_size=[2500, 2500],
         pol_stim_pos=[0, 0],
-        pol_background_value=0.74
+        pol_background_value=0.74,
     )
     com_port = "COM3" # for DLP-IO8-G
     ###### PARAMETERS END ######
