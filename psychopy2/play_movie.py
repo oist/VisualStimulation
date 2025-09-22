@@ -1,4 +1,4 @@
-from psychopy import visual, data, event, logging
+from psychopy import visual, data, event, logging, core
 import os, time
 from datetime import datetime
 from serial import Serial
@@ -12,13 +12,13 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "rec6"
+    exp_name = "test"
     logdir = r"D:\experiments\20250317"
     com_port = "COM3" # for DLP-IO8-G
-    repeats = 1
-    movie_path = ""
-    offset = 0 # start time
-    duration = 30 # in sec
+    repeats = 2
+    movie_path = r"C:\Users\tomoy\Documents\visual_stim\output.avi"
+    offset = 10 # start time
+    duration = 5 # in sec
     ###### PARAMETERS END ######
 
     # initialize DLP-IO8-G
@@ -61,11 +61,11 @@ if __name__ == "__main__":
     )
     
     # resize movie
-    screen_w, screen_h = win_lum.size
-    movie_w, movie_h = movie.size
-    scale = min(screen_w / movie_w, screen_h / movie_h)
-    scaled_size = (int(movie_w * scale), int(movie_h * scale))
-    movie.size = scaled_size
+#    screen_w, screen_h = win_lum.size
+#    movie_w, movie_h = movie.size
+#    scale = min(screen_w / movie_w, screen_h / movie_h)
+#    scaled_size = (int(movie_w * scale), int(movie_h * scale))
+#    movie.size = scaled_size
 
     # constant polarization
     rect = visual.rect.Rect(win=win_pol, pos=[0, 0], size=[1024, 768],
@@ -84,13 +84,13 @@ if __name__ == "__main__":
             break
 
     # black -> black
-    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=3, hold_time=5, framerate=fr, stim_size=s1)
+    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[0,0,0], ramp_time=2, hold_time=0, framerate=fr, stim_size=s1)
     
     n_frames = int(duration * win_lum.getActualFrameRate())
+    stop_loop = False
     for rep in range(repeats):
         movie.seek(offset)
         movie.play()
-        clock = core.Clock()
 
         for i in range(n_frames):
             if i == 0:
@@ -106,13 +106,12 @@ if __name__ == "__main__":
             if stop_loop:
                 break
         
-        movie.stop()
-        core.wait(0.1)
+        core.wait(0.2)
         if stop_loop:
             break
 
     # black -> black
-    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=5, hold_time=5, framerate=fr, stim_size=s1)
+    reset_screen3(win_lum, start_color=[0,0,0], end_color=[-1,-1,-1], ramp_time=1, hold_time=1, framerate=fr, stim_size=s1)
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')
