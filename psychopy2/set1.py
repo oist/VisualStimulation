@@ -15,10 +15,10 @@ if __name__ == "__main__":
     exp_name = "test"
     logdir = r"D:\experiments\20250317"
     com_port = "COM3" # for DLP-IO8-G
-    repeats = 10
-    movie_path = r"C:\Users\tomoy\Documents\visual_stim\20250922_natural_movie\squid_disappear.mp4"
+    repeats = 12
+    movie_path = r"C:\Users\tomoy\Documents\visual_stim\20250922_natural_movie\touch_of_the_evil.avi"
     offset = 0.0 # start time
-    duration = 15.0 # in sec
+    duration = 60.0 # in sec
     ###### PARAMETERS END ######
 
     # initialize DLP-IO8-G
@@ -84,16 +84,21 @@ if __name__ == "__main__":
             break
 
     # black -> gray
-    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[0,0,0], ramp_time=2, hold_time=0, framerate=fr, stim_size=s1)
+    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[0,0,0], ramp_time=3, hold_time=5, framerate=fr, stim_size=s1)
     
     n_frames = int(duration * win_lum.getActualFrameRate())
     stop_loop = False
+    frame_counter = 0
     for rep in range(repeats):
+        exp_handler.addData('frame', frame_counter)
+        exp_handler.addData('rep', rep)
+        exp_handler.nextEntry()
         movie.reset()
         movie.seek(offset)
         movie.play()
 
         for i in range(n_frames):
+            frame_counter += 1
             if i == 0:
                 dlp.write(b'1')
             else:
@@ -111,7 +116,7 @@ if __name__ == "__main__":
             break
 
     # gray -> black
-    reset_screen3(win_lum, start_color=[0,0,0], end_color=[-1,-1,-1], ramp_time=1, hold_time=1, framerate=fr, stim_size=s1)
+    reset_screen3(win_lum, start_color=[-1,-1,-1], end_color=[-1,-1,-1], ramp_time=3, hold_time=5, framerate=fr, stim_size=s1)
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
     dlp.write(b'3')
