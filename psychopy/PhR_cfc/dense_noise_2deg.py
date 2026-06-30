@@ -3,25 +3,27 @@ import os, time
 from datetime import datetime
 from serial import Serial
 
-from annulus import annulus_stim, AnnulusParams
+#import sys
+#sys.path.append("..")
+from noise import noise_stim, NoiseParams
 
 if __name__ == "__main__":
     """
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "rec6"
-    logdir = r"D:\experiments\20260608"
-    p = AnnulusParams(
-        center_pos=(518, -235),
-        inner_radius=3 * 11.87,
-        outer_radius=15 * 11.87,
-        outer_brightness=[-1, -.98, -.96, -.94, -.92, -.90, -.88, -.86, -.84, -.82, -.80],
-        inner_brightness=[-1,-.8],
-        repeats=10,
-        bg=-1,
-        t1=4.0,
-        t2=2.0
+    exp_name = "test"
+    logdir = r"D:\experiments\20260514"
+    p = NoiseParams(
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\rudi\20260514_white_noise_lowres_N1500_p100_2deg.npy",
+        stim_time=1.0,
+        binary=False,
+        mat_start=0,
+        mat_end=1200,
+        lum_stim_size=[1280, 720],
+        lum_stim_pos=[0, 0], # center position of the luminance stimuli
+        lum_stim_value=1,
+        lum_background_value=-1,
     )
     monitor_name = "DLP3010EVM-LC"
     com_port = "COM3" # for DLP-IO8-G
@@ -44,8 +46,8 @@ if __name__ == "__main__":
                                         saveWideText=True,
                                         savePickle=False)
 
-    win = visual.Window(monitor=monitor_name, size=[1280,720], screen=0,
-                        units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
+    win_lum = visual.Window(monitor=monitor_name, size=[1280,720], screen=0,
+                            units='pix', color=[-1,-1,-1], allowGUI=False, waitBlanking=True)
 
     # wait for TTL HIGH in channel 2 or keyboard input
     while True:
@@ -58,9 +60,8 @@ if __name__ == "__main__":
             break
 
     time.sleep(5.0) # wait 5 sec before proceeding
-
-    annulus_stim(win, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
-
+    # start session; generate TTL pulses from channel 1
+    noise_stim(win_lum, exp_handler, p, dlp=dlp, code_on=b'1', code_off=b'Q')
     time.sleep(5.0) # wait 10 sec after the session is over
 
     # using channel 3, send TTL to DAQ to notify the completion of the session
@@ -70,4 +71,4 @@ if __name__ == "__main__":
     dlp.close()
 
     exp_handler.close()
-    win.close()
+    win_lum.close()

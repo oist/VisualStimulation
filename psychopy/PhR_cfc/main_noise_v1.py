@@ -12,12 +12,14 @@ if __name__ == "__main__":
     """
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "rec11"
-    logdir = r"D:\experiments\20260512"
+    exp_name = "test"
+    logdir = r"D:\experiments\20260514"
     p = NoiseParams(
-        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_2DEG.npy",
+        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\rudi\20260514_white_noise_lowres_N1500_p5_1deg.npy",
+#        npy_filepath=r"C:\Users\tomoy\Documents\visual_stim\20241021_LSN_matrix\LSN_2DEG.npy",
         stim_time=1.0,
-        binary=True,
+        binary=False,
+#        binary=True,
         # mat_start=0,
         # mat_end=1200,
         lum_stim_size=[1280, 720],

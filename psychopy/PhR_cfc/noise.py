@@ -67,6 +67,8 @@ def noise_stim(win_lum, exp_handler, p: NoiseParams, framerate=60, dlp=None, cod
             image = np.zeros_like(raw)
             image[raw != 0] = f
             image[raw == 0] = b
+            #image[raw >= 0] = f
+            #image[raw < 0] = b
         else:
             image = np.zeros_like(raw)
             image[raw > 0] = f
