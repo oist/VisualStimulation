@@ -49,6 +49,7 @@ class RFMapperParams:
 
 def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_off):
     dlp = Serial(port=com_port, baudrate=115200)
+    dlp.write(code_off)
 
     now = datetime.now()
     dt_string = now.strftime("%Y%m%d_%H%M%S")
@@ -149,8 +150,6 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
 
     time.sleep(5.0)
 
-    dlp.write(code_off)
-
     try:
         while True:
             trial_num += 1
@@ -197,7 +196,10 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
     time.sleep(5.0)
 
     exp_handler.close()
-    dlp.write(code_off)
+    # TTL to signal the end of the stimuli
+    dlp.write(b'3')
+    time.sleep(0.1)
+    dlp.write(b'E')
     dlp.close()
     win.close()
 
@@ -205,15 +207,15 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
 if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "test"
-    logdir = r"D:\experiments\20260528"
+    exp_name = "rec6"
+    logdir = r"D:\experiments\20260701"
     p = RFMapperParams(
-        t1=4.0,
+        t1=1.0,
         t2=1.0,
         shift_step=0.25 * 11.87,
         diameter_step=0.25 * 11.87,
         diameter=5 * 11.87,
-        pos=(0, 0),
+        pos=(239.7739999999997,-144.81399999999988),
         bg1=-1.0,
         bg2=-1.0,
         fg=0.0,

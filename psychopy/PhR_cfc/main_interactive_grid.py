@@ -8,7 +8,8 @@ Key bindings:
     Arrow keys  : shift grid position
     s / l       : decrease / increase circle diameter
     1 / 2       : decrease / increase circle brightness (fg)
-    3 / 4       : decrease / increase circle spacing
+    3 / 4       : decrease / increase horizontal circle spacing
+    5 / 6       : decrease / increase vertical circle spacing
     Escape      : end session
 
 Parameters (GridParams):
@@ -19,7 +20,8 @@ Parameters (GridParams):
     n_rows          : number of grid rows
     diameter        : initial circle diameter (pix)
     diameter_step   : diameter step size (pix)
-    spacing         : center-to-center distance between circles (pix)
+    spacing_x       : horizontal center-to-center distance between circles (pix)
+    spacing_y       : vertical center-to-center distance between circles (pix)
     spacing_step    : spacing adjustment step (pix)
     pos             : initial grid center position (pix)
     bg1             : background brightness during t1 [-1, 1]
@@ -46,7 +48,8 @@ class GridParams:
     n_rows: int = 5
     diameter: float = 50.0
     diameter_step: float = 5.0
-    spacing: float = 100.0
+    spacing_x: float = 100.0
+    spacing_y: float = 100.0
     spacing_step: float = 10.0
     pos: Tuple[float, float] = (0.0, 0.0)
     bg_brightness_t1: float = -1.0
@@ -55,10 +58,10 @@ class GridParams:
     brightness_step: float = 0.1
 
 
-def make_grid_xys(n_cols, n_rows, spacing, pos):
+def make_grid_xys(n_cols, n_rows, spacing_x, spacing_y, pos):
     ox, oy = pos[0], pos[1]
-    xys = [(ox + (i - (n_cols - 1) / 2) * spacing,
-            oy + (j - (n_rows - 1) / 2) * spacing)
+    xys = [(ox + (i - (n_cols - 1) / 2) * spacing_x,
+            oy + (j - (n_rows - 1) / 2) * spacing_y)
            for i in range(n_cols)
            for j in range(n_rows)]
     return np.array(xys, dtype=float)
@@ -66,6 +69,7 @@ def make_grid_xys(n_cols, n_rows, spacing, pos):
 
 def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_off):
     dlp = Serial(port=com_port, baudrate=115200)
+    dlp.write(code_off)
 
     now = datetime.now()
     dt_string = now.strftime("%Y%m%d_%H%M%S")
@@ -85,10 +89,11 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
 
     pos = list(p.pos)
     diameter = p.diameter
-    spacing = p.spacing
+    spacing_x = p.spacing_x
+    spacing_y = p.spacing_y
     circle_brightness = p.circle_brightness
 
-    xys = make_grid_xys(p.n_cols, p.n_rows, spacing, pos)
+    xys = make_grid_xys(p.n_cols, p.n_rows, spacing_x, spacing_y, pos)
     grid = visual.ElementArrayStim(
         win,
         nElements=len(xys),
@@ -116,7 +121,7 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
     clock = core.Clock()
 
     def update_grid():
-        new_xys = make_grid_xys(p.n_cols, p.n_rows, spacing, pos)
+        new_xys = make_grid_xys(p.n_cols, p.n_rows, spacing_x, spacing_y, pos)
         grid.nElements = len(new_xys)
         grid.xys = new_xys
         grid.sizes = diameter
@@ -126,13 +131,13 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
         info_text.text = (
             f"pos=({pos[0]:.0f}, {pos[1]:.0f})  "
             f"diam={diameter:.0f}  "
-            f"spacing={spacing:.0f}  "
+            f"spacing=({spacing_x:.0f}, {spacing_y:.0f})  "
             f"circ={circle_brightness:.2f}  "
             f"trial={trial_num}"
         )
 
     def process_keys():
-        nonlocal pos, diameter, spacing, circle_brightness
+        nonlocal pos, diameter, spacing_x, spacing_y, circle_brightness
         keys = event.getKeys()
         changed = False
         for key in keys:
@@ -163,10 +168,16 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
                 circle_brightness = min(1.0, circle_brightness + p.brightness_step)
                 changed = True
             elif key == "3":
-                spacing = max(p.spacing_step, spacing - p.spacing_step)
+                spacing_x = max(p.spacing_step, spacing_x - p.spacing_step)
                 changed = True
             elif key == "4":
-                spacing += p.spacing_step
+                spacing_x += p.spacing_step
+                changed = True
+            elif key == "5":
+                spacing_y = max(p.spacing_step, spacing_y - p.spacing_step)
+                changed = True
+            elif key == "6":
+                spacing_y += p.spacing_step
                 changed = True
         if changed:
             update_grid()
@@ -219,10 +230,11 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
             exp_handler.addData('x', pos[0])
             exp_handler.addData('y', pos[1])
             exp_handler.addData('diameter', diameter)
-            exp_handler.addData('spacing', spacing)
+            exp_handler.addData('spacing_x', spacing_x)
+            exp_handler.addData('spacing_y', spacing_y)
             exp_handler.addData('circle_brightness', circle_brightness)
             exp_handler.nextEntry()
-            print(f"  Trial {trial_num}: pos=({pos[0]:.0f}, {pos[1]:.0f}), diam={diameter:.0f}, spacing={spacing:.0f}, circ={circle_brightness:.2f}")
+            print(f"  Trial {trial_num}: pos=({pos[0]:.0f}, {pos[1]:.0f}), diam={diameter:.0f}, spacing=({spacing_x:.0f}, {spacing_y:.0f}), circ={circle_brightness:.2f}")
 
     except StopIteration:
         pass
@@ -230,7 +242,11 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
     time.sleep(5.0)
 
     exp_handler.close()
-    dlp.write(code_off)
+
+    # TTL to signal the end of the stimuli
+    dlp.write(b'3')
+    time.sleep(0.1)
+    dlp.write(b'E')
     dlp.close()
     win.close()
 
@@ -239,16 +255,17 @@ if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
     exp_name = "test"
-    logdir = r"D:\experiments\20260528"
+    logdir = r"D:\experiments\20260701"
     p = GridParams(
-        t1=4.0,
-        t2=1.0,
+        t1=0.5,
+        t2=0.5,
         n_cols=8,
         n_rows=8,
         shift_step=0.2 * 11.87,
         diameter=0.5 * 11.87,
         diameter_step=0.2 * 11.87,
-        spacing=2 * 11.87,
+        spacing_x=2 * 11.87,
+        spacing_y=2 * 11.87,
         spacing_step=0.2 * 11.87,
         pos=(0.0, 0.0),
         bg_brightness_t1=-1.0,
