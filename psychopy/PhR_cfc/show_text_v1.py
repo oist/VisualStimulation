@@ -15,6 +15,7 @@ Keys (active while waiting, during delays, and during blank/text periods):
     3 / 4         : sx +/- 0.1
     5 / 6         : kx +/- 0.1
     7 / 8         : height +/- 1 pixel (minimum 1)
+    Arrow keys    : move text by 5 pixels along screen x/y (up is positive y)
 
 Adjustments persist across cycles. CSV rows contain final cycle values; the raw
 log records individual adjustments. com_port=None disables all DLP operations.
@@ -63,9 +64,18 @@ KEY_ADJUSTMENTS = {
     '7': ('height', 1.0), '8': ('height', -1.0),
 }
 
+POSITION_ADJUSTMENTS = {
+    'left': (-5.0, 0.0), 'right': (5.0, 0.0),
+    'up': (0.0, 5.0), 'down': (0.0, -5.0),
+}
+
 
 def apply_key(p, key):
     """Apply one adjustment and return whether the key was recognized."""
+    if key in POSITION_ADJUSTMENTS:
+        dx, dy = POSITION_ADJUSTMENTS[key]
+        p.pos = (p.pos[0] + dx, p.pos[1] + dy)
+        return True
     if key not in KEY_ADJUSTMENTS:
         return False
     name, delta = KEY_ADJUSTMENTS[key]
@@ -161,6 +171,7 @@ class AffineTextStim(ImageStim):
         return (vertices - center) @ self.transform.T + center
 
     def update_params(self, p):
+        self.pos = p.pos
         self.transform = transformation_matrix(p.theta, p.sx, p.sy, p.kx, p.ky)
         self.size = self.texture_size * p.height / self.glyph_height
         # Also invalidate legacy OpenGL's cached geometry.
@@ -208,8 +219,11 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port=None,
             changed = False
             for key in keys:
                 if apply_key(p, key):
-                    name, _ = KEY_ADJUSTMENTS[key]
-                    logging.exp(f'Trial {trial}: key={key}, {name}={getattr(p, name):g}')
+                    if key in POSITION_ADJUSTMENTS:
+                        logging.exp(f'Trial {trial}: key={key}, pos={p.pos}')
+                    else:
+                        name, _ = KEY_ADJUSTMENTS[key]
+                        logging.exp(f'Trial {trial}: key={key}, {name}={getattr(p, name):g}')
                     changed = True
             if changed:
                 text.update_params(p)
@@ -218,10 +232,12 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port=None,
         def draw_info(waiting=False):
             if p.display_info:
                 info.text = (
-                    f'trial={trial}/{p.repeat}  height={p.height:g} px\n'
+                    f'trial={trial}/{p.repeat}  height={p.height:g} px  '
+                    f'pos=({p.pos[0]:g}, {p.pos[1]:g})\n'
                     f'theta={p.theta:g} deg  scale=({p.sx:g}, {p.sy:g})  '
                     f'shear=({p.kx:g}, {p.ky:g})\n'
-                    '1/2: theta   3/4: sx   5/6: kx   7/8: height   Esc: quit'
+                    '1/2: theta   3/4: sx   5/6: kx   7/8: height\n'
+                    'Arrows: move 5 px   Esc: quit'
                     + ('\nSpace / Enter or TTL to start' if waiting else '')
                 )
                 info.draw()
@@ -310,7 +326,7 @@ if __name__ == '__main__':
     logdir = r"D:\experiments\20260917"
     monitor_name = 'DLP3010EVM-LC'
     screen_idx = 0
-    com_port = "COM3"  # For example 'COM3' to enable DLP communication.
+    com_port = None  # For example 'COM3' to enable DLP communication.
     code_on = b'1'
     code_off = b'Q'
     ###### PARAMETERS END ######
