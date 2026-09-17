@@ -91,7 +91,7 @@ def make_grid_xys(n_cols, n_rows, spacing, pos,
     rotation = np.array([[c, -s], [s, c]])
     scaling = np.diag([sx, sy])
     shear = np.array([[1.0, kx], [ky, 1.0]])
-    transform = shear @ scaling @ rotation
+    transform = rotation @ shear @ scaling
     # Positions are row vectors, so multiply by the transpose.
     return xys @ transform.T + np.asarray(pos, dtype=float)
 
@@ -262,33 +262,31 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
 if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "test"
-    logdir = r"C:\Users\tomoyuki\Documents\New folder"
+    exp_name = "rec5"
+    logdir = r"D:\experiments\20260917"
     p = SweepParams(
-        t1=0.5,
-        t2=0.5,
-        n_cols=8,
-        n_rows=8,
-        diameter=0.5 * 11.87,
-        pos=(0.0, 0.0),
+        t1=4,
+        t2=4,
+        n_cols=80,
+        n_rows=80,
+        diameter=0.5 * 10.87,
+        pos=(313, 52),
         bg_brightness_t1=-1.0,
         bg_brightness_t2=-1.0,
         circle_brightness=1.0,
-        spacing_range=[2 * 11.87, 3 * 11.87, 4 * 11.87],
-        repeat=30,
-        display_info=True,
-        sleep_before=5.0,
+        spacing_range=[1 * 10.87, 2 * 10.87, 4 * 10.87],
+        repeat=50,
+        display_info=False,
+        sleep_before=10.0,
         sleep_after=5.0,
         # Circle positions: rotate (degrees CCW), then scale, then shear.
-        theta=51.3,
-        sx=1.77,
-        sy=1.0,
-        kx=1.0,
-        ky=0.0,
+        theta=51.3, # 51.3
+        sx=1/1.77, sy=1.0,  #1/1.77, 1
+        kx=1.0, ky=0.0, #1, 0
     )
-    monitor_name = "testMonitor"
+    monitor_name = "DLP3010EVM-LC"
     screen_idx = 0
-    com_port = None  # Set to None to disable DLP communication and TTL pulses.
+    com_port = "COM3"  # Set to None to disable DLP communication and TTL pulses.
     code_on = b'1'
     code_off = b'Q'
     ###### PARAMETERS END ######

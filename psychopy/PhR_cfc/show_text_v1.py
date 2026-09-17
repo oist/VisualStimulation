@@ -305,14 +305,14 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port=None,
 if __name__ == '__main__':
     ###### PARAMETERS BEGIN ######
     p = TextParams(
-        # text='squid',
-        text='イカ',
+        text='S',
+        # text='イカ',
         pos=(313, 52),
         height=30.0,
         font=None,  # Or a full path to a .ttf/.otf font.
         t1=4,
         t2=4,
-        repeat=50,
+        repeat=100,
         theta=51.3,
         sx=1.0/1.77,
         sy=1.0,
@@ -322,11 +322,11 @@ if __name__ == '__main__':
         sleep_before=5.0,
         sleep_after=5.0,
     )
-    exp_name = 'test'
+    exp_name = 'rec7'
     logdir = r"D:\experiments\20260917"
     monitor_name = 'DLP3010EVM-LC'
     screen_idx = 0
-    com_port = None  # For example 'COM3' to enable DLP communication.
+    com_port = 'COM3' # For example 'COM3' to enable DLP communication.
     code_on = b'1'
     code_off = b'Q'
     ###### PARAMETERS END ######
