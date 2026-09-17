@@ -291,26 +291,26 @@ if __name__ == '__main__':
     p = TextParams(
         # text='squid',
         text='イカ',
-        pos=(0.0, 0.0),
+        pos=(313, 52),
         height=30.0,
         font=None,  # Or a full path to a .ttf/.otf font.
-        t1=2,
-        t2=2,
-        repeat=30,
+        t1=4,
+        t2=4,
+        repeat=50,
         theta=51.3,
         sx=1.0/1.77,
         sy=1.0,
         kx=1.0,
         ky=0.0,
         display_info=True,
-        sleep_before=1.0,
-        sleep_after=1.0,
+        sleep_before=5.0,
+        sleep_after=5.0,
     )
-    exp_name = 'show_text'
-    logdir = Path(__file__).resolve().parent / 'logs'
-    monitor_name = 'testMonitor'
+    exp_name = 'test'
+    logdir = r"D:\experiments\20260917"
+    monitor_name = 'DLP3010EVM-LC'
     screen_idx = 0
-    com_port = None  # For example 'COM3' to enable DLP communication.
+    com_port = "COM3"  # For example 'COM3' to enable DLP communication.
     code_on = b'1'
     code_off = b'Q'
     ###### PARAMETERS END ######
