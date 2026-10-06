@@ -96,12 +96,14 @@ def make_grid_xys(n_cols, n_rows, spacing, pos,
     return xys @ transform.T + np.asarray(pos, dtype=float)
 
 
-def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_off):
+def main(p, exp_name, logdir, monitor_name, screen_idx, com_port):
     dlp = None
     if com_port is not None:
         from serial import Serial
         dlp = Serial(port=com_port, baudrate=115200)
-        dlp.write(code_off)
+        dlp.write(b'Q') # Initialize channel 1 LOW.
+        dlp.write(b'E') # Initialize channel 3 LOW.
+        dlp.write(b'R')  # Initialize channel 4 LOW.
 
     now = datetime.now()
     dt_string = now.strftime("%Y%m%d_%H%M%S")
@@ -188,7 +190,7 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
     # Wait for TTL HIGH in channel 2 (if connected) or keyboard input.
     while True:
         if dlp is not None:
-            dlp.write(b'S')
+            dlp.write(b'S') # listen to channel 2
             x = dlp.read(3).decode('utf-8')
             if x[0] == '1':
                 break
@@ -223,7 +225,7 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
                 while clock.getTime() < p.t2:
                     handle_keys(rep, spacing)
                     if dlp is not None:
-                        dlp.write(code_on if first_frame else code_off)
+                        dlp.write(b'1' if first_frame else b'Q') # write to channel 1
                     first_frame = False
                     grid.draw()
                     if p.display_info:
@@ -252,9 +254,9 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
 
     # TTL to signal the end of the stimuli
     if dlp is not None:
-        dlp.write(b'3')
+        dlp.write(b'3') # channel 3 HIGH
         time.sleep(0.1)
-        dlp.write(b'E')
+        dlp.write(b'E') # channel 3 LOW
         dlp.close()
     win.close()
 
@@ -287,8 +289,6 @@ if __name__ == "__main__":
     monitor_name = "DLP3010EVM-LC"
     screen_idx = 0
     com_port = "COM3"  # Set to None to disable DLP communication and TTL pulses.
-    code_on = b'1'
-    code_off = b'Q'
     ###### PARAMETERS END ######
 
-    main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_off)
+    main(p, exp_name, logdir, monitor_name, screen_idx, com_port)
