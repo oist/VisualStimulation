@@ -170,13 +170,13 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port, code_on, code_
 if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "full_field_chirp"
-    logdir = r"D:\experiments"
+    exp_name = "rec14"
+    logdir = r"D:\experiments\20260930"
     p = ChirpParams(
         f0=0.5,
         f1=10,
         method="logarithmic",
-        repeats=50,
+        repeats=20,
         t1=2,
         t2=4,
         t3=4,
@@ -186,11 +186,11 @@ if __name__ == "__main__":
         stim_size=(1280, 720),  # Width, height (pix).
         stim_pos=(0, 0),  # Center x, y relative to window center (pix).
         sleep_before=5.0,
-        sleep_after=10.0,
+        sleep_after=5.0,
     )
     monitor_name = "DLP3010EVM-LC"
     screen_idx = 0
-    com_port = None  # Set to None to disable DLP communication and TTL pulses.
+    com_port = "COM3"  # Set to None to disable DLP communication and TTL pulses.
     code_on = b'1'
     code_off = b'Q'
     ###### PARAMETERS END ######

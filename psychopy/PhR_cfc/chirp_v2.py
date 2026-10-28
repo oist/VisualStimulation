@@ -130,7 +130,7 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port):
                         code = b'1' if first_frame and phase in ('t2', 't5') else b'Q'
                         dlp.write(code)
                         # Channel 4: HIGH on the first t2 frame, LOW otherwise.
-                        dlp.write(b'4' if first_frame and phase == 't2' else b'R')
+                        dlp.write(b'4' if first_frame and phase in ('t1', 't3') else b'R')
                     first_frame = False
 
                     # Sweep frequency during t5; all other phases are uniform.
@@ -176,13 +176,13 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port):
 if __name__ == "__main__":
 
     ###### PARAMETERS BEGIN ######
-    exp_name = "full_field_chirp"
-    logdir = r"D:\experiments"
+    exp_name = "rec8"
+    logdir = r"D:\experiments\20261022"
     p = ChirpParams(
         f0=0.5,
         f1=10,
         method="logarithmic",
-        repeats=50,
+        repeats=10,
         t1=2,
         t2=4,
         t3=4,
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     )
     monitor_name = "DLP3010EVM-LC"
     screen_idx = 0
-    com_port = None  # Set to None to disable DLP communication and TTL pulses.
+    com_port = "COM3"  # Set to None to disable DLP communication and TTL pulses.
     ###### PARAMETERS END ######
 
     main(p, exp_name, logdir, monitor_name, screen_idx, com_port)
