@@ -5,7 +5,7 @@ center (x, y) in pixels relative to the window center; positive x is right
 and positive y is up. The area outside the rectangle stays black.
 
 Each repeat presents t1 black, t2 white, t3 black, t4 gray,
-t5 frequency chirp, and t7 black. The chirp retains the original
+t5 frequency chirp, and t6 black. The chirp retains the original
 90-degree phase, evaluated using elapsed time within t5.
 Timing, serial triggering, logging, and
 session cleanup follow main_grid_sweep_v2.py. Channel 1 pulses at the
@@ -40,7 +40,7 @@ class ChirpParams:
     t3: float = 4.0  # Black.
     t4: float = 2.0  # Gray.
     t5: float = 8.0  # Frequency chirp.
-    t7: float = 1.0  # Black.
+    t6: float = 1.0  # Black.
     stim_size: Tuple[float, float] = (1280, 720)  # Width, height (pix).
     stim_pos: Tuple[float, float] = (0, 0)  # Center x, y (pix).
     sleep_before: float = 5.0
@@ -83,7 +83,7 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port):
         ('t3', p.t3, -1),
         ('t4', p.t4, 0),
         ('t5', p.t5, None),
-        ('t7', p.t7, -1),
+        ('t6', p.t6, -1),
     ]
 
     # Wait for TTL HIGH in channel 2 (if connected) or keyboard input.
@@ -188,7 +188,7 @@ if __name__ == "__main__":
         t3=4,
         t4=2,
         t5=8,
-        t7=2,
+        t6=2,
         stim_size=(1280, 720),  # Width, height (pix).
         stim_pos=(0, 0),  # Center x, y relative to window center (pix).
         sleep_before=5.0,
