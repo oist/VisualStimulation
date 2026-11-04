@@ -11,12 +11,12 @@ if __name__ == "__main__":
     ###### PARAMETERS BEGIN ######
     exp_name = "rec3"
     logdir = r"D:\experiments\20260608"
-    repeats = 10
-    fg_values = [-1, -.98, -.96, -.94, -.92, -.90, -.88, -.86, -.84, -.82]
-    fg_values = [-1, -.95, -.90, -.85, -.80, -.75, -.70, -.65, -.60, -.55]
+    repeats = 150
+    # fg_values = [-1, -.98, -.96, -.94, -.92, -.90, -.88, -.86, -.84, -.82]
+    fg_values = [1]
     bg = -1
-    t1 = 2.0
-    t2 = 2.0
+    t1 = 4.0
+    t2 = 4.0
     monitor_name = "DLP3010EVM-LC"
     com_port = "COM3" # for DLP-IO8-G
     code_on = b'1'
