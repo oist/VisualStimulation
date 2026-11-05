@@ -13,8 +13,9 @@ parameter accepts only "2x2", "4x4", or "8x8" (default "2x2"). Window dimensions
 must be divisible by the selected block size.
 The background is also shown during sleep_before and sleep_after.
 Channel 1 pulses at noise onset; channel 3 pulses after sleep_after.
-With a DLP device, channel 2 starts the session. With com_port=None, start
-automatically. Escape ends the session, including during waits.
+Start on a channel 2 DLP trigger or any key other than Escape, then wait
+sleep_before. With com_port=None, wait for a key. Escape ends the session,
+including during waits.
 Set seed to an integer to reproduce both the image pools and trial sequence.
 CSV columns are trial, repeat, mean, sigma; session details remain in the raw log.
 """
@@ -180,11 +181,20 @@ def main(p, exp_name, logdir, monitor_name, screen_idx, com_port):
         logging.exp(f"Noise pools ready: window_size={list(win.size)}, binning={p.binning}")
         occurrences = np.zeros(len(p.mean_values), dtype=int)
 
-        while dlp is not None:
-            check_abort()
-            dlp.write(b'S')  # Listen to channel 2.
-            if dlp.read(3).startswith(b'1'):
+        print("Waiting for a start key or DLP trigger (Escape aborts)...")
+        while True:
+            keys = event.getKeys()
+            if 'escape' in keys:
+                raise StopIteration
+            if keys:
+                logging.exp("Session started by keyboard.")
                 break
+            if dlp is not None:
+                dlp.write(b'S')  # Listen to channel 2.
+                if dlp.read(3).startswith(b'1'):
+                    logging.exp("Session started by DLP trigger.")
+                    break
+            time.sleep(0.01)
         wait_with_abort(p.sleep_before)
 
         for trial_num, (condition_id, image_id) in enumerate(sequence, start=1):
